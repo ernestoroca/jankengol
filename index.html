@@ -2,9 +2,24 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
     <script type="text/javascript" src="cliente.js"></script>
     <script type="text/javascript">
+      var firebaseConfig = {
+        apiKey: "AIzaSyAE0BFC11pL8LAsmzfKojGAkxiwt5-sbBo",
+        authDomain: "jankengol.firebaseapp.com",
+        databaseURL: "https://jankengol.firebaseio.com",
+        projectId: "jankengol",
+        storageBucket: "jankengol.appspot.com",
+        messagingSenderId: "225043875998",
+        appId: "1:225043875998:web:d204d20da25101fe5e538f"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      var database = firebase.database();
+      
       window.onload = iniciar;
       window.addEventListener("orientationchange", gestorOrientacion);
     </script>
