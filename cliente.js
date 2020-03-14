@@ -3,5 +3,5 @@ function iniciar(){
 }
 
 function gestorOrientacion(){
-  alert(screen.orientation);
+  alert(screen.orientation.angle);
 }
