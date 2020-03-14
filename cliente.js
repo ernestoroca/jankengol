@@ -2,6 +2,6 @@ function iniciar(){
   
 }
 
-function gestionOrientacion(){
+function gestorOrientacion(){
   alert(screen.orientation);
 }
