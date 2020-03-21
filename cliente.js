@@ -342,6 +342,15 @@ rutas.jugadores = function(){
     var cod1 = document.getElementById("cod1").value;
     var cod2 = document.getElementById("cod2").value;
     var cod3 = document.getElementById("cod3").value;
+    
+    cod1 = cod1.trim();
+    cod1 = cod1.toUpperCase();
+    
+    cod2 = cod1.trim();
+    cod2 = cod1.toUpperCase();
+    
+    cod3 = cod1.trim();
+    cod3 = cod1.toUpperCase();
     if (cod1.length != 4 || cod2.length != 4 || cod3.length != 4){
       M.toast({
         html: 'Cada grupo de valores debe contener 4 letras',
