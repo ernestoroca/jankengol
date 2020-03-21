@@ -288,6 +288,11 @@ rutas.jugadores = function(){
         </div>
         <div class="collapsible-body">
           <div class="row">
+            <div class="col s12">
+              <p>Ingrese el código de su tarjeta, en grupos 4 letras.</p>
+            </div>
+          </div>
+          <div class="row">
             <div class="input-field col s4">
               <input id="cod1" type="text" class="validate">
               <label for="cod1">####</label>
@@ -346,11 +351,11 @@ rutas.jugadores = function(){
     cod1 = cod1.trim();
     cod1 = cod1.toUpperCase();
     
-    cod2 = cod1.trim();
-    cod2 = cod1.toUpperCase();
+    cod2 = cod2.trim();
+    cod2 = cod2.toUpperCase();
     
-    cod3 = cod1.trim();
-    cod3 = cod1.toUpperCase();
+    cod3 = cod3.trim();
+    cod3 = cod3.toUpperCase();
     if (cod1.length != 4 || cod2.length != 4 || cod3.length != 4){
       M.toast({
         html: 'Cada grupo de valores debe contener 4 letras',
@@ -365,6 +370,11 @@ rutas.jugadores = function(){
             misDatos.jugadores = [];
           }
           window.location.href = "#unjugador/"+cod1+cod2+cod3;
+        });
+      } else {
+        M.toast({
+          html: 'Su código es erroneo',
+          displayLength: 5000,
         });
       }
     });
