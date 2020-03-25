@@ -456,7 +456,7 @@ function backEnd(funcion,param,back){
                 match.poderVisitante = poder;
                 match.estado = "centro";
                 match.tiempo = 0;
-                matchRef.set(match,function(error) {
+                firebase.database().ref("matchs/"+key).set(match,function(error) {
                   if (error) {
                     back(null);
                   } else {
