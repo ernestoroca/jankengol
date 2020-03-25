@@ -1167,7 +1167,7 @@ rutas.esperando = function(){
         llaves = JSON.parse(llavesStr);
       }
       llaves.push(llave);
-      cacheStorage.setItem("llavesMatch",llaves);
+      cacheStorage.setItem("llavesMatch",llaves,4*7*24*60*60*1000);
     }
   });
 };
