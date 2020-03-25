@@ -158,6 +158,21 @@ var tiempo = -1;
 var avanzarJuego = null;
 function estadoJuego(snap){
   var match = snap.val();
+  if (match.estado == "esperandoOponente"){
+    return;
+  }
+  if (match.estado == "fin"){
+    window.location.href = "#menu";
+    return;
+  }
+  if (window.location.hash !== "#juego"){
+    window.location.href = "#juego";
+    setTimeout(function(){
+      if (avanzarJuego !== null){
+        avanzarJuego(match);
+      }
+    },1000);
+  }
   if (match.tiempo !== tiempo){
     tiempo = match.tiempo;
     if (avanzarJuego !== null){
@@ -1157,12 +1172,17 @@ rutas.esperando = function(){
   });
 };
 rutas.juego = function(vecUrl){
-  var match = vecUrl[1];
   if (misDatos === null){
     window.location.href = "#menu";
     return;
   }
-  
+  var llavesStr = cacheStorage.getItem("llavesMatch");
+  if (llaveStr === null){
+    window.location.href = "#menu";
+    return;
+  }
+  var llaves = JSON.parse(llavesStr);
+  var llave = llaves[llaves.length-1];
   var cuerpo = document.getElementsByTagName('body')[0];
   cuerpo.innerHTML = `<canvas id="myCanvas"></canvas>`;
   cuerpo.style.overflow = "hidden";
@@ -1181,8 +1201,6 @@ rutas.juego = function(vecUrl){
     piedPapTij();
     elemCanvas.addEventListener('touchend',finTouch);
     elemCanvas.addEventListener('touchstart',inicioTouch);
-    
-    backEnd('inicioJuego',{juego:match},null);
   }
   function limpiarCancha(){
     ctx.fillStyle = "green";
