@@ -416,7 +416,12 @@ function backEnd(funcion,param,back){
               usuarioRef.set(datos, function(error) {
                 back(datos);
               });
+            } else {
+              back(datos);
             }
+          },function(error){
+            console.error(error);
+            back(datos);
           });
         } else {
           back(datos);
