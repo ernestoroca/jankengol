@@ -1308,7 +1308,7 @@ rutas.juego = function(vecUrl){
   }
   function finTouch(event){
     if(eleccion !== ""){
-      backEnd('enviarJugada',{juego:match,jugada:eleccion},null);
+      backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
     }
   }
   
@@ -1316,7 +1316,7 @@ rutas.juego = function(vecUrl){
   var estadoAnterior = "centro";
   
   avanzarJuego = function(juego){
-    var soy =juego.local == firebaseUID ? "local" : "visitante";
+    var soy = (juego.local == firebaseUID) ? "local" : "visitante";
     var marcador;
     
     limpiarCancha();
