@@ -158,6 +158,9 @@ var tiempo = -1;
 var avanzarJuego = null;
 function estadoJuego(snap){
   var match = snap.val();
+  if (match == null){
+    return;
+  }
   if (match.estado == "esperandoOponente"){
     return;
   }
