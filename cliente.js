@@ -154,6 +154,17 @@ function actualEdad(edad,nacimiento){
   return edad;
 }
 
+var tiempo = -1;
+var avanzarJuego = null;
+function estadoJuego(snap){
+  var match = snap.val();
+  if (match.tiempo !== tiempo){
+    tiempo = match.tiempo;
+    if (avanzarJuego !== null){
+      avanzarJuego(match);
+    }
+  }
+}
 function iniciar(){
   var firebaseConfig = {
     apiKey: "AIzaSyAE0BFC11pL8LAsmzfKojGAkxiwt5-sbBo",
@@ -196,6 +207,7 @@ function gestorOrientacion(){
   alert(window.screen.orientation.angle);
 }
 
+
 var rutas = [];
 rutas.menu = function(){
   var strHtml;
@@ -230,6 +242,17 @@ rutas.menu = function(){
   nvoEquipo = null;
   if (misDatos !== null){
     backEnd('noJugar',null,function(){});
+    var llavesStr = cacheStorage.getItem("llavesMatch");
+    if (llavesStr !== null){
+      var llaves = JSON.parse(llavesStr);
+      var lng = llaves.length;
+      var i;
+      for(i=0;i<lng;i++){
+        firebase.database().ref("matchs/"+llaves[i]).off();
+      }
+      cacheStorage.removeItem("llavesMatch");
+    }
+    avanzarJuego = null;
   }
 };
 rutas.jugadores = function(){
@@ -1120,9 +1143,260 @@ rutas.esperando = function(){
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "visible";
   
-  backEnd('buscarOponente',null,function(datos){
-    var elDato = datos;
+  backEnd('buscarOponente',null,function(llave){
+    if(llave !== null){
+      firebase.database().ref("matchs/"+llave).on("value",estadoJuego);
+      var llavesStr = cacheStorage.getItem("llavesMatch");
+      var llaves = [];
+      if (llavesStr !== null){
+        llaves = JSON.parse(llavesStr);
+      }
+      llaves.push(llave);
+      cacheStorage.setItem("llavesMatch",llaves);
+    }
   });
 };
+rutas.juego = function(vecUrl){
+  var match = vecUrl[1];
+  if (misDatos === null){
+    window.location.href = "#menu";
+    return;
+  }
+  
+  var cuerpo = document.getElementsByTagName('body')[0];
+  cuerpo.innerHTML = `<canvas id="myCanvas"></canvas>`;
+  cuerpo.style.overflow = "hidden";
+  var ancho = screen.availWidth;
+  var alto = screen.availHeight;
+  var subancho = ancho*0.8;
+  var ctx;
+  
+  function iniciar(){
+    var elemCanvas = document.getElementById("myCanvas");
+    elemCanvas.width = ancho;
+    elemCanvas.height = alto;
+    ctx = elemCanvas.getContext("2d");
+    ctx.lineWidth = 5;
+    limpiarCancha();
+    piedPapTij();
+    elemCanvas.addEventListener('touchend',finTouch);
+    elemCanvas.addEventListener('touchstart',inicioTouch);
+    
+    backEnd('inicioJuego',{juego:match},null);
+  }
+  function limpiarCancha(){
+    ctx.fillStyle = "green";
+    ctx.strokeStyle = "white";
+    
+    //pinta la cancha
+    ctx.beginPath();
+    ctx.fillRect (0,0,ancho*0.8,alto);
+    
+    //linea central
+    ctx.beginPath();
+    ctx.moveTo(subancho/2, 0);
+    ctx.lineTo(subancho/2, alto);
+    ctx.stroke();
+    
+    //circulo central
+    ctx.beginPath();
+    ctx.arc(subancho/2, alto/2, 50, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    //area grande izq
+    ctx.beginPath();
+    ctx.moveTo(0, alto*0.25);
+    ctx.lineTo(subancho*0.20, alto*0.25);
+    ctx.lineTo(subancho*0.20, alto*0.75);
+    ctx.lineTo(0, alto*0.75);
+    ctx.stroke();
+    
+    //area grande der
+    ctx.beginPath();
+    ctx.moveTo(subancho, alto*0.25);
+    ctx.lineTo(subancho*0.80, alto*0.25);
+    ctx.lineTo(subancho*0.80, alto*0.75);
+    ctx.lineTo(subancho, alto*0.75);
+    ctx.stroke();
+    
+    //area chica izq
+    ctx.beginPath();
+    ctx.moveTo(0, alto*0.35);
+    ctx.lineTo(subancho*0.10, alto*0.35);
+    ctx.lineTo(subancho*0.10, alto*0.65);
+    ctx.lineTo(0, alto*0.65);
+    ctx.stroke();
+    
+    //area chica der
+    ctx.beginPath();
+    ctx.moveTo(subancho, alto*0.35);
+    ctx.lineTo(subancho*0.90, alto*0.35);
+    ctx.lineTo(subancho*0.90, alto*0.65);
+    ctx.lineTo(subancho, alto*0.65);
+    ctx.stroke();
+    
+    //semicirculo izq
+    ctx.beginPath();
+    ctx.arc(subancho*0.15, alto/2, 50, -0.365*Math.PI,  0.365*Math.PI);
+    ctx.stroke();
+    
+    //semicirculo der
+    ctx.beginPath();
+    ctx.arc(subancho*0.85, alto/2, 50, 0.6366*Math.PI,  1.363*Math.PI);
+    ctx.stroke();
+    ctx.beginPath();
+  }
+  function piedPapTij(){
+    var piedra = document.createElement("IMG");
+    piedra.src = "piedra.png";
+    piedra.onload = function(){
+      ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
+    };
+    var papel = document.createElement("IMG");
+    papel.src = "papel.png";
+    papel.onload = function(){
+      ctx.drawImage(papel, ancho*0.8, alto*0.33,ancho*0.20,alto*0.33);
+    };
+    var tijera = document.createElement("IMG");
+    tijera.src = "tijera.png";
+    tijera.onload = function(){
+      ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
+    };
+  }
+  iniciar();
+  
+  var eleccion = "";
+  function inicioTouch(event){
+    var i,h;
+    var lng = event.touches.length;
+    if (eleccion === ""){
+      for(i=0; i<lng; i++){
+        if(event.touches[i].clientX >= ancho*0.8){
+          h = event.touches[i].clientY;
+          if (h<=alto*0.33){
+            eleccion = "piedra";
+          } else if (h<=alto*0.66){
+            eleccion = "papel";
+          } else {
+            eleccion = "tijera";
+          }
+          break;
+        }
+      }
+    }
+  }
+  function finTouch(event){
+    if(eleccion !== ""){
+      backEnd('enviarJugada',{juego:match,jugada:eleccion},null);
+    }
+  }
+  
+  var pelota = [subancho/2,alto/2];
+  var estadoAnterior = "centro";
+  
+  avanzarJuego = function(juego){
+    var soy =juego.local == firebaseUID ? "local" : "visitante";
+    var marcador;
+    
+    limpiarCancha();
+    
+    var x = 0.2*Math.random()-0.1;
+    var offset;
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    if (soy == "local"){
+      marcador = String(juego.marcador[0]) + " - " + String(juego.marcador[1]);
+    } else {
+      marcador = String(juego.marcador[1]) + " - " + String(juego.marcador[0]);
+    }
+    ctx.textAlign = "center";
+    ctx.fillText(marcador,subancho/2, 20);
 
-
+    switch(estadoAnterior){
+      case "local-defensa":
+        if (juego.estado == "local-medio"){
+          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+        } else { // centro o fin
+          ctx.fillStyle = (soy == "local") ? "red" : "blue";
+          offset = (soy == "local") ? subancho/2 : 0;
+        }
+        break;
+      case "local-medio":
+        if (juego.estado == "local-defensa"){
+          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+        } else { // visita-medio
+          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+        }
+        break;
+      case "centro":
+        if (juego.estado == "local-medio"){
+          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+        } else { // local-defensa
+          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+        }
+        break;
+      case "visita-medio":
+        if (juego.estado == "local-medio"){
+          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+        } else { // visita-defensa
+          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+        }
+        break;
+      case "visita-defensa":
+        if (juego.estado == "visita-medio"){
+          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+        } else { // centro o fin
+          ctx.fillStyle = (soy == "local") ? "blue" : "red";
+          offset = (soy == "local") ? 0 : subancho/2;
+        }
+        break;
+    }
+    switch(juego.estado){
+      case "local-defensa":
+        x =+ (soy == "local") ? 0.125 : 0.875;
+        break;
+      case "local-medio":
+        x += (soy == "local") ? 0.375 : 0.625;
+        break;
+      case "visita-medio":
+        x += (soy == "local") ? 0.625 : 0.375;
+        break;
+      case "visita-defensa":
+        x =+ (soy == "local") ? 0.875 : 0.125;
+        break;
+      case "centro":
+        x = 0.5;
+    }
+    if (juego.estado == "centro" || juego.estado == "fin"){
+      ctx.font = "50px Arial";
+      ctx.textAlign = "left";
+      ctx.fillText("GOOOL", 10 + offset, 50);
+      pelota[0] = subancho/2;
+      pelota[1] = alto/2;
+      
+      if (juego.estado == "fin"){
+        ctx.textAlign = "center";
+        ctx.fillText("Fin del Juego",subancho/2, alto/2);
+        setTimeout(function(){
+          window.location.href = "#menu";
+        },5000);
+        document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
+        return;
+      }
+    } else {
+      ctx.moveTo(pelota[0],pelota[1]);
+      pelota[0] = subancho * x;
+      pelota[1] = alto * Math.random();
+      ctx.lineTo(pelota[0],pelota[1]);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(pelota[0],pelota[1],5,0,2 * Math.PI, false);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+    }
+    estadoAnterior = juego.estado;
+    ctx.beginPath();
+    eleccion = "";
+  };
+};
