@@ -500,13 +500,12 @@ function backEnd(funcion,param,back){
           if (match.jugadaLocal === ""){
             match.jugadaLocal = param.jugada;
           }
-        }
-        if (match.visitante == userId){
+        } else if (match.visitante == userId){
           if (match.jugadaVisitante === ""){
             match.jugadaVisitante = param.jugada;
           }
         }
-        if (match.local !== "" && match.visitante !==""){
+        if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
           match = motorJuego(match);
           match.local = "";
           match.visitante = "";
