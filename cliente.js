@@ -481,16 +481,16 @@ rutas.unjugador = function(vecUrl){
     document.getElementById("jugador").innerHTML=strHtml;
     document.getElementById("posicion").value = jugador.posicion;
     M.FormSelect.init(document.querySelectorAll('select'));
+    document.getElementById("posicion").onchange = function(){
+      var posicion = document.getElementById("posicion").value;
+      backEnd('setPosicion',{jugador:idJugador, posicion:posicion},function(res){
+        if(res){
+          cloudStorage.removeItem("/jugadores/"+idJugador);
+        }
+        window.location.href = "#jugadores";
+      });
+    };
   }
-  document.getElementById("posicion").onchange = function(){
-    var posicion = document.getElementById("posicion").value;
-    backEnd('setPosicion',{jugador:idJugador, posicion:posicion},function(res){
-      if(res){
-        cloudStorage.removeItem("/jugadores/"+idJugador);
-      }
-      window.location.href = "#jugadores";
-    });
-  };
 };
 rutas.equipo = function(){
   var strHtml;
@@ -1083,7 +1083,7 @@ rutas.cambiar = function(vecUrl){
     }
     var div= document.createElement("DIV");
     div.innerHTML = strHtml;
-    div.classList.add("col","s6");
+    div.classList.add("col","s12");
     div.id= jugador.codigo;
     document.getElementById("lista").appendChild(div);
   }
