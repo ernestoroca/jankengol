@@ -1163,7 +1163,6 @@ rutas.esperando = function(){
   
   backEnd('buscarOponente',null,function(llave){
     if(llave !== null){
-      firebase.database().ref("matchs/"+llave).on("value",estadoJuego);
       var llavesStr = cacheStorage.getItem("llavesMatch");
       var llaves = [];
       if (llavesStr !== null){
@@ -1171,6 +1170,7 @@ rutas.esperando = function(){
       }
       llaves.push(llave);
       cacheStorage.setItem("llavesMatch",JSON.stringify(llaves),4*7*24*60*60*1000);
+      firebase.database().ref("matchs/"+llave).on("value",estadoJuego);
     }
   });
 };
