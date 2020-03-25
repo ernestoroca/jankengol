@@ -1177,7 +1177,7 @@ rutas.juego = function(vecUrl){
     return;
   }
   var llavesStr = cacheStorage.getItem("llavesMatch");
-  if (llaveStr === null){
+  if (llavesStr === null){
     window.location.href = "#menu";
     return;
   }
