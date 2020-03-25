@@ -450,13 +450,20 @@ function backEnd(funcion,param,back){
             var key = childSnapshot.key;
             var match = childSnapshot.val();
             match.visitante = userId;
-            match.estado ="porIniciarse";
-            database.ref('matchs/' + key).set(match,function(error) {
-              if (error) {
-                back(null);
-              } else {
-                back(key);
-              }
+            getPoderEquipo(match.local,function(poder){
+              match.poderLocal = poder;
+              getPoderEquipo(match.visitante,function(poder){
+                match.poderVisitante = poder;
+                match.estado = "centro";
+                match.tiempo = 0;
+                matchRef.set(match,function(error) {
+                  if (error) {
+                    back(null);
+                  } else {
+                    back(key);
+                  }
+                });
+              });
             });
             return true;
           });
@@ -476,35 +483,6 @@ function backEnd(funcion,param,back){
           var key = childSnapshot.key;
           database.ref('matchs/' + key).remove();
         });
-      });
-      break;
-    case 'inicioJuego':
-      matchRef = firebase.database().ref("matchs/"+param.juego);
-      matchRef.once("value", function(snapshot) {
-        var match = snapshot.val();
-        if (match === null){
-          return;
-        }
-        if (match.estado !== "porIniciarse"){
-          return;
-        }
-        if (match.local === userId || match.visitante === userId){
-          getPoderEquipo(match.local,function(poder){
-            match.poderLocal = poder;
-            getPoderEquipo(match.visitante,function(poder){
-              match.poderVisitante = poder;
-              match.estado = "centro";
-              match.tiempo = 0;
-              matchRef.set(match,function(error) {
-                if (error) {
-                  back(false);
-                } else {
-                  back(true);
-                }
-              });
-            });
-          });
-        }
       });
       break;
     case 'enviarJugada':
