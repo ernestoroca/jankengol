@@ -507,8 +507,8 @@ function backEnd(funcion,param,back){
         }
         if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
           match = motorJuego(match);
-          match.local = "";
-          match.visitante = "";
+          match.jugadaLocal = "";
+          match.jugadaVisitante = "";
           match.tiempo++;
         }
         
