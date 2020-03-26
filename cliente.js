@@ -157,6 +157,7 @@ function actualEdad(edad,nacimiento){
 var tiempo = -1;
 var avanzarJuego = null;
 function estadoJuego(snap){
+  M.toast({html:"estadoJuego:ingreso"});  
   var match = snap.val();
   if (match == null){
     M.toast({html:"estadoJuego:null"});
@@ -1182,7 +1183,9 @@ rutas.esperando = function(){
       }
       llaves.push(llave);
       cacheStorage.setItem("llavesMatch",JSON.stringify(llaves),4*7*24*60*60*1000);
-      firebase.database().ref("matchs/"+llave).on("value",estadoJuego);
+      firebase.database().ref("matchs/"+llave).on("value",estadoJuego,function(error){
+        M.toast({html:"The read failed: " + errorObject.code});
+      });
     }
   });
 };
