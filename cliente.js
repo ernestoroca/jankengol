@@ -159,23 +159,33 @@ var avanzarJuego = null;
 function estadoJuego(snap){
   var match = snap.val();
   if (match == null){
-    window.location.href = "#menu";
+    M.toast({html:"estadoJuego:null"});
+    setTimeout(function(){
+      window.location.href = "#menu";
+    },5000);
     return;
   }
   if (match.estado == "esperandoOponente"){
+    M.toast({html:"estadoJuego:esperandoOponente"});
     return;
   }
   if (match.estado == "fin"){
-    window.location.href = "#menu";
+    M.toast({html:"estadoJuego:fin"});
+    setTimeout(function(){
+      window.location.href = "#menu";
+    },5000);
     return;
   }
   if (window.location.hash !== "#juego"){
-    window.location.href = "#juego";
+    M.toast({html:"estadoJuego:juego"});
+    setTimeout(function(){
+      window.location.href = "#juego";
+    },5000);
     setTimeout(function(){
       if (avanzarJuego !== null){
         avanzarJuego(match);
       }
-    },1000);
+    },6000);
   }
   if (match.tiempo !== tiempo){
     tiempo = match.tiempo;
@@ -1164,6 +1174,7 @@ rutas.esperando = function(){
   
   backEnd('buscarOponente',null,function(llave){
     if(llave !== null){
+      M.toast({html:"llave:"+llave});
       var llavesStr = cacheStorage.getItem("llavesMatch");
       var llaves = [];
       if (llavesStr !== null){
@@ -1176,12 +1187,15 @@ rutas.esperando = function(){
   });
 };
 rutas.juego = function(vecUrl){
+  M.toast({html:"rutas.juego:ingreso"});
   if (misDatos === null){
+    M.toast({html:"rutas.juego:misDatos=null"});
     window.location.href = "#menu";
     return;
   }
   var llavesStr = cacheStorage.getItem("llavesMatch");
   if (llavesStr === null){
+    M.toast({html:"rutas.juego:llavesMatch=null"});
     window.location.href = "#menu";
     return;
   }
