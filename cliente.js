@@ -1175,14 +1175,18 @@ rutas.esperando = function(){
   
   backEnd('buscarOponente',null,function(llave){
     if(llave !== null){
-      M.toast({html:"llave:"+llave});
+      M.toast({html:"buscarOponente:llave="+llave});
       var llavesStr = cacheStorage.getItem("llavesMatch");
+      M.toast({html:"buscarOponente:uno"});
       var llaves = [];
       if (llavesStr !== null){
         llaves = JSON.parse(llavesStr);
       }
+      M.toast({html:"buscarOponente:dos"});
       llaves.push(llave);
+      M.toast({html:"buscarOponente:tres"});
       cacheStorage.setItem("llavesMatch",JSON.stringify(llaves),4*7*24*60*60*1000);
+      M.toast({html:"buscarOponente:cuatro"});
       firebase.database().ref("matchs/"+llave).on("value",estadoJuego,function(error){
         M.toast({html:"The read failed: " + errorObject.code});
       });
