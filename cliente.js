@@ -159,6 +159,7 @@ var avanzarJuego = null;
 function estadoJuego(snap){
   var match = snap.val();
   if (match == null){
+    window.location.href = "#menu";
     return;
   }
   if (match.estado == "esperandoOponente"){
