@@ -170,11 +170,11 @@ function motorJuego(juego){
         case "visita-medio":
         case "centro":
           valLocal = juego.poderLocal[1];
-          valVisita = juego.poderVisita[1];
+          valVisita = juego.poderVisitante[1];
           break;
         case "visita-defensa":
           valLocal = juego.poderLocal[2];
-          valVisita = juego.poderVisita[1];
+          valVisita = juego.poderVisitante[1];
           break;
       }
       var valTotal = valVisita + valLocal;
@@ -188,7 +188,7 @@ function motorJuego(juego){
     switch(juego.estado){
       case "local-defensa":
         juego.estado = (res == "local") ? "local-medio" : "centro";
-        if (res !== "local"){
+        if (juego.estado !== "centro"){
           juego.marcador[1]++;
         }
         break;
@@ -203,7 +203,7 @@ function motorJuego(juego){
         break;
       case "visita-defensa":
         juego.estado = (res == "local") ? "centro" : "visita-medio";
-        if(res == "local"){
+        if(juego.estado == "centro"){
           juego.marcador[0]++;
         }
         break;
