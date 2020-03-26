@@ -272,6 +272,7 @@ rutas.menu = function(){
   nvoEquipo = null;
   if (misDatos !== null){
     backEnd('noJugar',null,function(){});
+    cacheStorage.removeItem("llavesMatch");
     var llavesStr = cacheStorage.getItem("llavesMatch");
     if (llavesStr !== null){
       var llaves = JSON.parse(llavesStr);
