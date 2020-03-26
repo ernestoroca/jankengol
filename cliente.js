@@ -157,28 +157,23 @@ function actualEdad(edad,nacimiento){
 var tiempo = -1;
 var avanzarJuego = null;
 function estadoJuego(snap){
-  M.toast({html:"estadoJuego:ingreso"});  
   var match = snap.val();
   if (match == null){
-    M.toast({html:"estadoJuego:null"});
     setTimeout(function(){
       window.location.href = "#menu";
     },5000);
     return;
   }
   if (match.estado == "esperandoOponente"){
-    M.toast({html:"estadoJuego:esperandoOponente"});
     return;
   }
   if (match.estado == "fin"){
-    M.toast({html:"estadoJuego:fin"});
     setTimeout(function(){
       window.location.href = "#menu";
     },5000);
     return;
   }
   if (window.location.hash !== "#juego"){
-    M.toast({html:"estadoJuego:juego"});
     setTimeout(function(){
       window.location.href = "#juego";
     },5000);
@@ -272,7 +267,6 @@ rutas.menu = function(){
   nvoEquipo = null;
   if (misDatos !== null){
     backEnd('noJugar',null,function(){});
-    cacheStorage.removeItem("llavesMatch");
     var llavesStr = cacheStorage.getItem("llavesMatch");
     if (llavesStr !== null){
       var llaves = JSON.parse(llavesStr);
@@ -1176,18 +1170,13 @@ rutas.esperando = function(){
   
   backEnd('buscarOponente',null,function(llave){
     if(llave !== null){
-      M.toast({html:"buscarOponente:llave="+llave});
       var llavesStr = cacheStorage.getItem("llavesMatch");
-      M.toast({html:"buscarOponente:uno"});
       var llaves = [];
       if (llavesStr !== null){
         llaves = JSON.parse(llavesStr);
       }
-      M.toast({html:"buscarOponente:dos"});
       llaves.push(llave);
-      M.toast({html:"buscarOponente:tres"});
       cacheStorage.setItem("llavesMatch",JSON.stringify(llaves),4*7*24*60*60*1000);
-      M.toast({html:"buscarOponente:cuatro"});
       firebase.database().ref("matchs/"+llave).on("value",estadoJuego,function(error){
         M.toast({html:"The read failed: " + errorObject.code});
       });
@@ -1195,15 +1184,12 @@ rutas.esperando = function(){
   });
 };
 rutas.juego = function(vecUrl){
-  M.toast({html:"rutas.juego:ingreso"});
   if (misDatos === null){
-    M.toast({html:"rutas.juego:misDatos=null"});
     window.location.href = "#menu";
     return;
   }
   var llavesStr = cacheStorage.getItem("llavesMatch");
   if (llavesStr === null){
-    M.toast({html:"rutas.juego:llavesMatch=null"});
     window.location.href = "#menu";
     return;
   }
