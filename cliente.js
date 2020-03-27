@@ -1220,7 +1220,7 @@ rutas.juego = function(vecUrl){
   var ctx;
   var cancha,piedra,papel,tijera;
     
-  cancha.onload = function(){
+  cuerpo.onload = function(){
     cancha = document.getElementById("cancha");
     piedra = document.getElementById("piedra");
     papel = document.getElementById("papel");
