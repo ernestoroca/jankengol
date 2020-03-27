@@ -1204,6 +1204,8 @@ rutas.juego = function(vecUrl){
   var cuerpo = document.getElementsByTagName('body')[0];
   cuerpo.innerHTML = `<canvas id="myCanvas"></canvas>`;
   cuerpo.style.overflow = "hidden";
+  ancho = screen.availWidth;
+  alto = screen.availHeight;
   var subancho = ancho*0.8;
   var ctx;
   
