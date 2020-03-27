@@ -1205,10 +1205,10 @@ rutas.juego = function(vecUrl){
   var strHtml;
     {strHtml = `
 <canvas id="myCanvas"></canvas>
-<img src="cancha.jpg" alt="" hidden>
-<img src="piedra.jpg" alt="" hidden>
-<img src="papel.jpg" alt="" hidden>
-<img src="tijera.jpg" alt="" hidden>
+<img src="cancha.jpg" hidden>
+<img src="piedra.png" hidden>
+<img src="papel.png" hidden>
+<img src="tijera.png" hidden>
     `;}
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "hidden";
