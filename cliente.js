@@ -180,7 +180,7 @@ function estadoJuego(snap){
       if (avanzarJuego !== null){
         avanzarJuego(match);
       }
-    },5000);
+    },15000);
   } else if (match.tiempo !== tiempo){
     tiempo = match.tiempo;
     if (avanzarJuego !== null){
