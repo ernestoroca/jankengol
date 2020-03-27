@@ -1219,21 +1219,20 @@ rutas.juego = function(vecUrl){
   }
   var ctx;
   var cancha,piedra,papel,tijera;
+  var elemCanvas = document.getElementById("myCanvas");
+  elemCanvas.width = ancho;
+  elemCanvas.height = alto;
+  ctx = elemCanvas.getContext("2d");
+  ctx.lineWidth = 5;
+  elemCanvas.addEventListener('touchend',finTouch);
+  elemCanvas.addEventListener('touchstart',inicioTouch);
     
   cuerpo.onload = function(){
     cancha = document.getElementById("cancha");
     piedra = document.getElementById("piedra");
     papel = document.getElementById("papel");
     tijera = document.getElementById("tijera");
-    var elemCanvas = document.getElementById("myCanvas");
-    elemCanvas.width = ancho;
-    elemCanvas.height = alto;
-    ctx = elemCanvas.getContext("2d");
-    ctx.lineWidth = 5;
-    
     repintar();
-    elemCanvas.addEventListener('touchend',finTouch);
-    elemCanvas.addEventListener('touchstart',inicioTouch);
   }
   function repintar(){
     ctx.drawImage(cancha,0,0,ancho*0.8,alto);
