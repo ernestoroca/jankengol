@@ -1211,79 +1211,19 @@ rutas.juego = function(vecUrl){
   }
   var subancho = ancho*0.8;
   var ctx;
-  
-  function iniciar(){
+  var cancha = document.createElement("IMG");
+  cancha.src = "cancha.jpg";
+    
+  cancha.onload = function(){
     var elemCanvas = document.getElementById("myCanvas");
     elemCanvas.width = ancho;
     elemCanvas.height = alto;
     ctx = elemCanvas.getContext("2d");
     ctx.lineWidth = 5;
-    limpiarCancha();
+    ctx.drawImage(cancha,0,0,subancho,alto);
     piedPapTij();
     elemCanvas.addEventListener('touchend',finTouch);
     elemCanvas.addEventListener('touchstart',inicioTouch);
-  }
-  function limpiarCancha(){
-    ctx.fillStyle = "green";
-    ctx.strokeStyle = "white";
-    
-    //pinta la cancha
-    ctx.beginPath();
-    ctx.fillRect (0,0,ancho*0.8,alto);
-    
-    //linea central
-    ctx.beginPath();
-    ctx.moveTo(subancho/2, 0);
-    ctx.lineTo(subancho/2, alto);
-    ctx.stroke();
-    
-    //circulo central
-    ctx.beginPath();
-    ctx.arc(subancho/2, alto/2, alto/4, 0, 2 * Math.PI);
-    ctx.stroke();
-    
-    //area grande izq
-    ctx.beginPath();
-    ctx.moveTo(0, alto*0.25);
-    ctx.lineTo(subancho*0.20, alto*0.25);
-    ctx.lineTo(subancho*0.20, alto*0.75);
-    ctx.lineTo(0, alto*0.75);
-    ctx.stroke();
-    
-    //area grande der
-    ctx.beginPath();
-    ctx.moveTo(subancho, alto*0.25);
-    ctx.lineTo(subancho*0.80, alto*0.25);
-    ctx.lineTo(subancho*0.80, alto*0.75);
-    ctx.lineTo(subancho, alto*0.75);
-    ctx.stroke();
-    
-    //area chica izq
-    ctx.beginPath();
-    ctx.moveTo(0, alto*0.35);
-    ctx.lineTo(subancho*0.10, alto*0.35);
-    ctx.lineTo(subancho*0.10, alto*0.65);
-    ctx.lineTo(0, alto*0.65);
-    ctx.stroke();
-    
-    //area chica der
-    ctx.beginPath();
-    ctx.moveTo(subancho, alto*0.35);
-    ctx.lineTo(subancho*0.90, alto*0.35);
-    ctx.lineTo(subancho*0.90, alto*0.65);
-    ctx.lineTo(subancho, alto*0.65);
-    ctx.stroke();
-    
-    //semicirculo izq
-    ctx.beginPath();
-    ctx.arc(subancho*0.15, alto/2, alto/4, -0.365*Math.PI,  0.365*Math.PI);
-    ctx.stroke();
-    
-    //semicirculo der
-    ctx.beginPath();
-    ctx.arc(subancho*0.85, alto/2, alto/4, 0.6366*Math.PI,  1.363*Math.PI);
-    ctx.stroke();
-    ctx.beginPath();
   }
   function piedPapTij(){
     var piedra = document.createElement("IMG");
@@ -1302,7 +1242,6 @@ rutas.juego = function(vecUrl){
       ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
     };
   }
-  iniciar();
   
   var eleccion = "";
   function inicioTouch(event){
@@ -1338,7 +1277,7 @@ rutas.juego = function(vecUrl){
     var soy = (juego.local == firebaseUID) ? "local" : "visitante";
     var marcador;
     
-    limpiarCancha();
+    ctx.drawImage(cancha,0,0,subancho,alto);
     
     var x = 0.2*Math.random()-0.1;
     var offset;
