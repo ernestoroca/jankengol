@@ -1203,7 +1203,7 @@ rutas.juego = function(vecUrl){
     {strHtml = `
 <canvas id="myCanvas"></canvas>
 <img src="cancha.jpg" hidden id="cancha">
-<img src="piedra.png" hidden id="pidera">
+<img src="piedra.png" hidden id="piedra">
 <img src="papel.png" hidden id="papel">
 <img src="tijera.png" hidden id="tijera">
     `;}
