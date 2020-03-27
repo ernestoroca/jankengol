@@ -4,6 +4,7 @@
 var firebaseUID = "";
 var misDatos = null;
 var nvoEquipo = null;
+var alto,ancho;
 
 window.onload = iniciar;
 window.addEventListener("orientationchange", gestorOrientacion);
@@ -229,7 +230,12 @@ function reload(){
     }
 }
 function gestorOrientacion(){
-  alert(window.screen.orientation.angle);
+  ancho = screen.availWidth;
+  alto = screen.availHeight;
+  if (alto > ancho){
+    alto = ancho/3;
+    M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
+  }
 }
 
 
@@ -1198,8 +1204,6 @@ rutas.juego = function(vecUrl){
   var cuerpo = document.getElementsByTagName('body')[0];
   cuerpo.innerHTML = `<canvas id="myCanvas"></canvas>`;
   cuerpo.style.overflow = "hidden";
-  var ancho = screen.availWidth;
-  var alto = screen.availHeight;
   var subancho = ancho*0.8;
   var ctx;
   
@@ -1325,6 +1329,7 @@ rutas.juego = function(vecUrl){
   var estadoAnterior = "centro";
   
   avanzarJuego = function(juego){
+    subancho = ancho*0.8;
     var soy = (juego.local == firebaseUID) ? "local" : "visitante";
     var marcador;
     
