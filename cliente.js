@@ -233,7 +233,7 @@ function gestorOrientacion(){
   ancho = screen.availWidth;
   alto = screen.availHeight;
   if (alto > ancho){
-    alto = ancho/3;
+    alto = ancho/2;
     M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
   }
 }
@@ -1206,6 +1206,9 @@ rutas.juego = function(vecUrl){
   cuerpo.style.overflow = "hidden";
   ancho = screen.availWidth;
   alto = screen.availHeight;
+  if (alto > ancho){
+    alto = ancho/2;
+  }
   var subancho = ancho*0.8;
   var ctx;
   
@@ -1236,7 +1239,7 @@ rutas.juego = function(vecUrl){
     
     //circulo central
     ctx.beginPath();
-    ctx.arc(subancho/2, alto/2, 50, 0, 2 * Math.PI);
+    ctx.arc(subancho/2, alto/2, alto/4, 0, 2 * Math.PI);
     ctx.stroke();
     
     //area grande izq
@@ -1273,12 +1276,12 @@ rutas.juego = function(vecUrl){
     
     //semicirculo izq
     ctx.beginPath();
-    ctx.arc(subancho*0.15, alto/2, 50, -0.365*Math.PI,  0.365*Math.PI);
+    ctx.arc(subancho*0.15, alto/2, alto/4, -0.365*Math.PI,  0.365*Math.PI);
     ctx.stroke();
     
     //semicirculo der
     ctx.beginPath();
-    ctx.arc(subancho*0.85, alto/2, 50, 0.6366*Math.PI,  1.363*Math.PI);
+    ctx.arc(subancho*0.85, alto/2, alto/4, 0.6366*Math.PI,  1.363*Math.PI);
     ctx.stroke();
     ctx.beginPath();
   }
