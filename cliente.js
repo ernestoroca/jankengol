@@ -1202,45 +1202,44 @@ rutas.juego = function(vecUrl){
   var llaves = JSON.parse(llavesStr);
   var llave = llaves[llaves.length-1];
   var cuerpo = document.getElementsByTagName('body')[0];
-  cuerpo.innerHTML = `<canvas id="myCanvas"></canvas>`;
+  var strHtml;
+    {strHtml = `
+<canvas id="myCanvas"></canvas>
+<img src="cancha.jpg" alt="" hidden>
+<img src="piedra.jpg" alt="" hidden>
+<img src="papel.jpg" alt="" hidden>
+<img src="tijera.jpg" alt="" hidden>
+    `;}
+  cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "hidden";
   ancho = screen.availWidth;
   alto = screen.availHeight;
   if (alto > ancho){
     alto = ancho/2;
   }
-  var subancho = ancho*0.8;
   var ctx;
-  var cancha = document.createElement("IMG");
-  cancha.src = "cancha.jpg";
+  var cancha,piedra,papel,tijera;
     
   cancha.onload = function(){
+    cancha = document.getElementById("cancha");
+    piedra = document.getElementById("piedra");
+    papel = document.getElementById("papel");
+    tijera = document.getElementById("tijera");
     var elemCanvas = document.getElementById("myCanvas");
     elemCanvas.width = ancho;
     elemCanvas.height = alto;
     ctx = elemCanvas.getContext("2d");
     ctx.lineWidth = 5;
-    ctx.drawImage(cancha,0,0,subancho,alto);
-    piedPapTij();
+    
+    repintar();
     elemCanvas.addEventListener('touchend',finTouch);
     elemCanvas.addEventListener('touchstart',inicioTouch);
   }
-  function piedPapTij(){
-    var piedra = document.createElement("IMG");
-    piedra.src = "piedra.png";
-    piedra.onload = function(){
-      ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
-    };
-    var papel = document.createElement("IMG");
-    papel.src = "papel.png";
-    papel.onload = function(){
-      ctx.drawImage(papel, ancho*0.8, alto*0.33,ancho*0.20,alto*0.33);
-    };
-    var tijera = document.createElement("IMG");
-    tijera.src = "tijera.png";
-    tijera.onload = function(){
-      ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
-    };
+  function repintar(){
+    ctx.drawImage(cancha,0,0,ancho*0.8,alto);
+    ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
+    ctx.drawImage(papel, ancho*0.8, alto*0.33,ancho*0.20,alto*0.33);
+    ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
   }
   
   var eleccion = "";
@@ -1266,18 +1265,40 @@ rutas.juego = function(vecUrl){
   function finTouch(event){
     if(eleccion !== ""){
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
+      pintarJugada("blue",ancho*0.8,eleccion);
     }
   }
+  function pintarJugada(color,derecha,eleccion){
+    var ini;
+    var delta = alto/3;
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    switch(eleccion){
+      case "piedra":
+        ini = 0;
+        break;
+      case "papel":
+        ini = 1/3;
+        break;
+      case "tijera":
+        ini = 2/3;
+        break;
+    }
+    ctx.moveTo(derecha,ini);
+    ctx.lineTo(derecha,ini+delta);
+    ctx.stroke();
+  }
   
-  var pelota = [subancho/2,alto/2];
+  var pelota = [(ancho*0.8)/2,alto/2];
   var estadoAnterior = "centro";
   
   avanzarJuego = function(juego){
-    subancho = ancho*0.8;
     var soy = (juego.local == firebaseUID) ? "local" : "visitante";
     var marcador;
     
-    ctx.drawImage(cancha,0,0,subancho,alto);
+    repintar();
+    pintarJugada("red",ancho-5,juego.oldVisita);
+    pintarJugada("blue",ancho-10,juego.oldLocal);
     
     var x = 0.2*Math.random()-0.1;
     var offset;
@@ -1289,7 +1310,7 @@ rutas.juego = function(vecUrl){
       marcador = String(juego.marcador[1]) + " - " + String(juego.marcador[0]);
     }
     ctx.textAlign = "center";
-    ctx.fillText(marcador,subancho/2, 20);
+    ctx.fillText(marcador,(ancho*0.8)/2, 20);
 
     switch(estadoAnterior){
       case "local-defensa":
@@ -1297,7 +1318,7 @@ rutas.juego = function(vecUrl){
           ctx.strokeStyle = (soy == "local") ? "blue" : "red";
         } else { // centro o fin
           ctx.fillStyle = (soy == "local") ? "red" : "blue";
-          offset = (soy == "local") ? subancho/2 : 0;
+          offset = (soy == "local") ? (ancho*0.8)/2 : 0;
         }
         break;
       case "local-medio":
@@ -1326,7 +1347,7 @@ rutas.juego = function(vecUrl){
           ctx.strokeStyle = (soy == "local") ? "red" : "blue";
         } else { // centro o fin
           ctx.fillStyle = (soy == "local") ? "blue" : "red";
-          offset = (soy == "local") ? 0 : subancho/2;
+          offset = (soy == "local") ? 0 : (ancho*0.8)/2;
         }
         break;
     }
@@ -1350,12 +1371,12 @@ rutas.juego = function(vecUrl){
       ctx.font = "50px Arial";
       ctx.textAlign = "left";
       ctx.fillText("GOOOL", 10 + offset, 50);
-      pelota[0] = subancho/2;
+      pelota[0] = (ancho*0.8)/2;
       pelota[1] = alto/2;
       
       if (juego.estado == "fin"){
         ctx.textAlign = "center";
-        ctx.fillText("Fin del Juego",subancho/2, alto/2);
+        ctx.fillText("Fin del Juego",(ancho*0.8)/2, alto/2);
         setTimeout(function(){
           window.location.href = "#menu";
         },5000);
@@ -1364,7 +1385,7 @@ rutas.juego = function(vecUrl){
       }
     } else {
       ctx.moveTo(pelota[0],pelota[1]);
-      pelota[0] = subancho * x;
+      pelota[0] = (ancho*0.8) * x;
       pelota[1] = alto * Math.random();
       ctx.lineTo(pelota[0],pelota[1]);
       ctx.stroke();
