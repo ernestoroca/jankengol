@@ -261,7 +261,7 @@ rutas.menu = function(){
         Mi Equipo
     </div>
     <div class="col s6 center" onclick="window.location.href='#esperando'">
-        <img class="responsive-img" src="cancha.jpg"><br>
+        <img class="responsive-img" src="jugar.jpg"><br>
         ¡A Jugar!
     </div>
 </div>
