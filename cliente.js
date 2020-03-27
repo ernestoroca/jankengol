@@ -1301,8 +1301,12 @@ rutas.juego = function(vecUrl){
     var marcador;
     
     repintar();
-    pintarJugada("red",ancho-5,juego.oldVisita);
-    pintarJugada("blue",ancho-10,juego.oldLocal);
+     if(juego.oldVisita !=""){
+      pintarJugada("red",ancho-5,juego.oldVisita);
+    }
+    if(juego.oldLocal){
+      pintarJugada("blue",ancho-10,juego.oldLocal);
+    }
     
     var x = 0.2*Math.random()-0.1;
     var offset;
