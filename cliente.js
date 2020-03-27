@@ -175,16 +175,13 @@ function estadoJuego(snap){
     return;
   }
   if (window.location.hash !== "#juego"){
-    setTimeout(function(){
-      window.location.href = "#juego";
-    },5000);
+    window.location.href = "#juego";
     setTimeout(function(){
       if (avanzarJuego !== null){
         avanzarJuego(match);
       }
-    },6000);
-  }
-  if (match.tiempo !== tiempo){
+    },5000);
+  } else if (match.tiempo !== tiempo){
     tiempo = match.tiempo;
     if (avanzarJuego !== null){
       avanzarJuego(match);
