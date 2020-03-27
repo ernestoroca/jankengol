@@ -180,7 +180,7 @@ function estadoJuego(snap){
       if (avanzarJuego !== null){
         avanzarJuego(match);
       }
-    },15000);
+    },5000);
   } else if (match.tiempo !== tiempo){
     tiempo = match.tiempo;
     if (avanzarJuego !== null){
@@ -1227,7 +1227,18 @@ rutas.juego = function(vecUrl){
   elemCanvas.addEventListener('touchend',finTouch);
   elemCanvas.addEventListener('touchstart',inicioTouch);
     
-  cuerpo.onload = repintar;
+  cancha.onload = function(){
+    ctx.drawImage(cancha,0,0,ancho*0.8,alto);
+  };
+  piedra.onload = function(){
+    ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
+  };
+  papel.onload = function(){
+    ctx.drawImage(papel, ancho*0.8, alto*0.33,ancho*0.20,alto*0.33);
+  };
+  tijera.onload = function(){
+    ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
+  };
   function repintar(){
     ctx.drawImage(cancha,0,0,ancho*0.8,alto);
     ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
