@@ -1242,7 +1242,7 @@ rutas.juego = function(vecUrl){
   function repintar(){
     function limpiarLinea(anch){
       ctx.beginPath();
-      ctx.strokeStyle = "white;
+      ctx.strokeStyle = "white";
       ctx.moveTo(anch,0);
       ctx.lineTo(anch,alto);
       ctx.stroke();
