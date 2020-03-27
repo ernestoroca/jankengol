@@ -443,6 +443,8 @@ function backEnd(funcion,param,back){
             jugadaVisitante: "",
             marcador: [0,0],
             tiempo: -1,
+            oldLocal:"",
+            oldVisita:"",
           });
           back(llave.key);
         } else {//acepto el desafio
@@ -507,6 +509,8 @@ function backEnd(funcion,param,back){
         }
         if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
           match = motorJuego(match);
+          match.oldLocal = match.jugadaLocal;
+          match.oldVisita = match.jugadaVisitante;
           match.jugadaLocal = "";
           match.jugadaVisitante = "";
           match.tiempo++;
