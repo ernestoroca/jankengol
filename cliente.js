@@ -1240,16 +1240,9 @@ rutas.juego = function(vecUrl){
     ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
   };
   function repintar(){
-    function limpiarLinea(anch){
-      ctx.beginPath();
-      ctx.strokeStyle = "white";
-      ctx.moveTo(anch,0);
-      ctx.lineTo(anch,alto);
-      ctx.stroke();
-    }
-    limpiarLinea(ancho*0.8);
-    limpiarLinea(ancho-5);
-    limpiarLinea(ancho-10);
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.fillRect (ancho*0.7,0,ancho*0.3,alto);
     
     ctx.drawImage(cancha,0,0,ancho*0.8,alto);
     ctx.drawImage(piedra, ancho*0.8, 0,ancho*0.20,alto*0.33);
