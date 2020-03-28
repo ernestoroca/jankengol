@@ -1302,6 +1302,7 @@ rutas.juego = function(vecUrl){
     ctx.moveTo(derecha,ini);
     ctx.lineTo(derecha,ini+delta);
     ctx.stroke();
+    ctx.beginPath();
   }
   
   var pelota = [(ancho*0.8)/2,alto/2];
@@ -1321,6 +1322,7 @@ rutas.juego = function(vecUrl){
     
     var x = 0.2*Math.random()-0.1;
     var offset;
+    ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     if (soy == "local"){
