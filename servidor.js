@@ -158,7 +158,7 @@ function motorJuego(juego){
         break;
     }
     
-    if (res == "empate"){
+    if (res === "empate"){
       var valVisita;
       var valLocal;
       switch(juego.estado){
@@ -174,7 +174,7 @@ function motorJuego(juego){
           break;
         case "visita-defensa":
           valLocal = juego.poderLocal[2];
-          valVisita = juego.poderVisitante[1];
+          valVisita = juego.poderVisitante[0];
           break;
       }
       var valTotal = valVisita + valLocal;
@@ -187,22 +187,22 @@ function motorJuego(juego){
     
     switch(juego.estado){
       case "local-defensa":
-        juego.estado = (res == "local") ? "local-medio" : "centro";
-        if (juego.estado !== "centro"){
+        juego.estado = (res === "local") ? "local-medio" : "centro";
+        if (juego.estado === "centro"){
           juego.marcador[1]++;
         }
         break;
       case "local-medio":
-        juego.estado = (res == "local") ? "visita-medio" : "local-defensa";
+        juego.estado = (res === "local") ? "visita-medio" : "local-defensa";
         break;
       case "centro":
-        juego.estado = (res == "local") ? "visita-medio" : "local-medio";
+        juego.estado = (res === "local") ? "visita-medio" : "local-medio";
         break;
       case "visita-medio":
-        juego.estado = (res == "local") ? "visita-defensa" : "local-medio";
+        juego.estado = (res === "local") ? "visita-defensa" : "local-medio";
         break;
       case "visita-defensa":
-        juego.estado = (res == "local") ? "centro" : "visita-medio";
+        juego.estado = (res === "local") ? "centro" : "visita-medio";
         if(juego.estado == "centro"){
           juego.marcador[0]++;
         }
@@ -514,6 +514,9 @@ function backEnd(funcion,param,back){
           match.jugadaLocal = "";
           match.jugadaVisitante = "";
           match.tiempo++;
+          if(match.tiempo > 100){
+            match.estado = "fin";
+          }
         }
         
         matchRef.set(match,function(error) {});
