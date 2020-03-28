@@ -1285,9 +1285,6 @@ rutas.juego = function(vecUrl){
   }
   function pintarJugada(color,derecha,eleccion){
     var ini;
-    var delta = alto/3;
-    ctx.beginPath();
-    ctx.strokeStyle = color;
     switch(eleccion){
       case "piedra":
         ini = 0;
@@ -1299,10 +1296,12 @@ rutas.juego = function(vecUrl){
         ini = 2*alto/3;
         break;
     }
+    var delta = alto/3;
+    ctx.beginPath();
+    ctx.strokeStyle = color;
     ctx.moveTo(derecha,ini);
     ctx.lineTo(derecha,ini+delta);
     ctx.stroke();
-    ctx.beginPath();
   }
   
   var pelota = [(ancho*0.8)/2,alto/2];
@@ -1320,58 +1319,63 @@ rutas.juego = function(vecUrl){
       pintarJugada("blue",ancho-10,juego.oldLocal);
     }
     
-    var x = 0.2*Math.random()-0.1;
-    var offset;
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
+    //imprime marcador
     if (soy == "local"){
       marcador = String(juego.marcador[0]) + " - " + String(juego.marcador[1]);
     } else {
       marcador = String(juego.marcador[1]) + " - " + String(juego.marcador[0]);
     }
+    var offset;
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
     ctx.textAlign = "center";
     ctx.fillText(marcador,(ancho*0.8)/2, 20);
 
+    //determina color, en base a quien gano
+    var color;
     switch(estadoAnterior){
       case "local-defensa":
         if (juego.estado == "local-medio"){
-          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+          color = (soy == "local") ? "blue" : "red";
         } else { // centro o fin
-          ctx.fillStyle = (soy == "local") ? "red" : "blue";
+          color = (soy == "local") ? "red" : "blue";
           offset = (soy == "local") ? (ancho*0.8)/2 : 0;
         }
         break;
       case "local-medio":
         if (juego.estado == "local-defensa"){
-          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+          color = (soy == "local") ? "red" : "blue";
         } else { // visita-medio
-          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+          color = (soy == "local") ? "blue" : "red";
         }
         break;
       case "centro":
         if (juego.estado == "local-medio"){
-          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+          color = (soy == "local") ? "red" : "blue";
         } else { // local-defensa
-          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+          color = (soy == "local") ? "blue" : "red";
         }
         break;
       case "visita-medio":
         if (juego.estado == "local-medio"){
-          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+          color = (soy == "local") ? "red" : "blue";
         } else { // visita-defensa
-          ctx.strokeStyle = (soy == "local") ? "blue" : "red";
+          color = (soy == "local") ? "blue" : "red";
         }
         break;
       case "visita-defensa":
         if (juego.estado == "visita-medio"){
-          ctx.strokeStyle = (soy == "local") ? "red" : "blue";
+          color = (soy == "local") ? "red" : "blue";
         } else { // centro o fin
-          ctx.fillStyle = (soy == "local") ? "blue" : "red";
+          color = (soy == "local") ? "blue" : "red";
           offset = (soy == "local") ? 0 : (ancho*0.8)/2;
         }
         break;
     }
+    
+    //ubica el avance de la pelota
+    var x = 0.2*Math.random()-0.1;
     switch(juego.estado){
       case "local-defensa":
         x =+ (soy == "local") ? 0.125 : 0.875;
@@ -1388,7 +1392,11 @@ rutas.juego = function(vecUrl){
       case "centro":
         x = 0.5;
     }
+     
+    //imprime el juego
     if (juego.estado == "centro" || juego.estado == "fin"){
+      ctx.beginPath();
+      ctx.fillStyle = color;
       ctx.font = "50px Arial";
       ctx.textAlign = "left";
       ctx.fillText("GOOOL", 10 + offset, 50);
@@ -1396,6 +1404,8 @@ rutas.juego = function(vecUrl){
       pelota[1] = alto/2;
       
       if (juego.estado == "fin"){
+        ctx.beginPath();
+        ctx.fillStyle = color;
         ctx.textAlign = "center";
         ctx.fillText("Fin del Juego",(ancho*0.8)/2, alto/2);
         setTimeout(function(){
@@ -1405,6 +1415,8 @@ rutas.juego = function(vecUrl){
         return;
       }
     } else {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
       ctx.moveTo(pelota[0],pelota[1]);
       pelota[0] = (ancho*0.8) * x;
       pelota[1] = alto * Math.random();
@@ -1412,12 +1424,11 @@ rutas.juego = function(vecUrl){
       ctx.stroke();
       
       ctx.beginPath();
-      ctx.arc(pelota[0],pelota[1],5,0,2 * Math.PI, false);
       ctx.fillStyle = 'white';
+      ctx.arc(pelota[0],pelota[1],5,0,2 * Math.PI, false);
       ctx.fill();
     }
     estadoAnterior = juego.estado;
-    ctx.beginPath();
     eleccion = "";
   };
 };
