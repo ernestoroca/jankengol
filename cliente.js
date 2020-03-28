@@ -1274,6 +1274,7 @@ rutas.juego = function(vecUrl){
     if(eleccion !== ""){
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
       pintarJugada("blue",ancho*0.8,eleccion);
+      eleccion = "";
     }
   }
   function pintarJugada(color,derecha,eleccion){
@@ -1422,6 +1423,5 @@ rutas.juego = function(vecUrl){
       ctx.fill();
     }
     estadoAnterior = juego.estado;
-    eleccion = "";
   };
 };
