@@ -498,13 +498,16 @@ function backEnd(funcion,param,back){
         if (vecEstados.indexOf(match.estado)>=0){
           return;
         }
+        var guardar = false;
         if (match.local === userId){
           if (match.jugadaLocal === ""){
             match.jugadaLocal = param.jugada;
+            guardar = true;
           }
         } else if (match.visitante == userId){
           if (match.jugadaVisitante === ""){
             match.jugadaVisitante = param.jugada;
+            guardar = true;
           }
         }
         if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
@@ -517,9 +520,11 @@ function backEnd(funcion,param,back){
           if(match.tiempo > 100){
             match.estado = "fin";
           }
+          guardar = true;
         }
-        
-        matchRef.set(match,function(error) {});
+        if (guardar){
+          matchRef.set(match,function(error) {});
+        }
       });
       break;
   }
