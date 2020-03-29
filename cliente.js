@@ -1314,6 +1314,7 @@ rutas.juego = function(vecUrl){
     
     if(juego.tiempo !== tiempo){
       tiempo = juego.tiempo;
+      repintar();
       avanzarJuego(juego);
     } else {
       limpiarJugada();
