@@ -265,7 +265,7 @@ rutas.menu = function(){
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "visible";
   
-  nvoEquipo = null;
+  eventoMatch = null;
   if (misDatos !== null){
     backEnd('noJugar',null,function(){});
     var llavesStr = cacheStorage.getItem("llavesMatch");
@@ -1198,19 +1198,21 @@ rutas.juego = function(vecUrl){
   var llave = llaves[llaves.length-1];
   var cuerpo = document.getElementsByTagName('body')[0];
   var strHtml;
-    {strHtml = `
+  {strHtml = `
 <canvas id="myCanvas"></canvas>
 <img src="cancha.jpg" hidden id="cancha">
 <img src="piedra.png" hidden id="piedra">
 <img src="papel.png" hidden id="papel">
 <img src="tijera.png" hidden id="tijera">
-    `;}
+`;}
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "hidden";
+  
   ancho = screen.availWidth;
   alto = screen.availHeight;
   if (alto > ancho){
     alto = ancho/2;
+    M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
   }
   
   var ctx;
@@ -1308,7 +1310,7 @@ rutas.juego = function(vecUrl){
   var tiempo = -1;
   var soy;
   eventoMatch = function(juego){
-    soy = (juego.local == firebaseUID) ? "local" : "visitante";
+    soy = (juego.local === firebaseUID) ? "local" : "visitante";
     
     if(juego.tiempo !== tiempo){
       tiempo = juego.tiempo;
@@ -1316,9 +1318,9 @@ rutas.juego = function(vecUrl){
     } else {
       limpiarJugada();
       var miJuego = (soy === "local") ? juego.jugadaLocal : juego.jugadaVisitante;
-      pintarJugada("blue",ancho*0.8,eleccion);
+      pintarJugada("blue",ancho*0.8, miJuego);
     }
-  }
+  };
   var pelota = [(ancho*0.8)/2,alto/2];
   var estadoAnterior = "centro";
   
@@ -1326,7 +1328,7 @@ rutas.juego = function(vecUrl){
     var marcador;
     
     repintar();
-    if(juego.oldVisita !=""){
+    if(juego.oldVisita !== ""){
       pintarJugada("red",ancho-5,juego.oldVisita);
     }
     if(juego.oldLocal){
@@ -1443,5 +1445,5 @@ rutas.juego = function(vecUrl){
       ctx.fill();
     }
     estadoAnterior = juego.estado;
-  };
+  }
 };
