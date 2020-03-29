@@ -213,6 +213,39 @@ function motorJuego(juego){
     }
     return juego;
 }
+function finJuego(juego){
+  var database = firebase.database();
+  var localRef = database.ref('usuarios/' + juego.local);
+  var visitaRef = database.ref('usuarios/' + juego.visitante);
+  var resultado;
+  if (match.marcador[0] > match.marcador[1]){//gana local
+    resultado = 1;
+  } else if (match.marcador[0] < match.marcador[1]){//gana visita
+    resultado = -1;
+  } else { //empate
+    resultado = 0;
+  }
+  localRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos){
+      datos.jugados++;
+      datos.ganados += (resultado == 1) ? 1 : 0;
+      datos.empatados += (resultado == 0) ? 1 : 0;
+      datos.nivel += (resultado == 0) ? 1 : (resultado == 1 ? 3 : 0);
+      localRef.set(datos);
+    }
+  });
+  visitaRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos){
+      datos.jugados++;
+      datos.ganados += (resultado == -1) ? 1 : 0;
+      datos.empatados += (resultado == 0) ? 1 : 0;
+      datos.nivel += (resultado == 0) ? 1 : (resultado == -1 ? 3 : 0);
+      visitaRef.set(datos);
+    }
+  });
+}
 
 function funNvoJugador(param,back){
   var database = firebase.database();
@@ -531,6 +564,9 @@ function funEnviarJugada(param){
         match.estado = "fin";
       }
       guardar = true;
+      if (match.estado === "fin"){
+        finJuego();
+      }
     }
     if (guardar){
       matchRef.set(match,function(error) {});
