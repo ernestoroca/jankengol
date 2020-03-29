@@ -213,7 +213,8 @@ function iniciar(){
       firebase.auth().signInAnonymously();
     }
   });
-  rutas.menu();
+  window.location.herf="#menu";
+  reload();
 }
 function reload(){
     var url = decodeURI(window.location.hash);
@@ -232,7 +233,6 @@ function gestorOrientacion(){
     M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
   }
 }
-
 
 var rutas = [];
 rutas.menu = function(){
