@@ -1327,12 +1327,15 @@ rutas.juego = function(vecUrl){
   function avanzarJuego(juego){
     var marcador;
     
-    repintar();
-    if(juego.oldVisita !== ""){
-      pintarJugada("red",ancho-5,juego.oldVisita);
-    }
-    if(juego.oldLocal){
-      pintarJugada("blue",ancho-10,juego.oldLocal);
+    //imprime la anterior jugada, si existe
+    if(juego.oldLocal !== ""){
+      if (soy === "local"){
+        pintarJugada("blue",ancho-10,juego.oldLocal);
+        pintarJugada("red",ancho-5,juego.oldVisita);
+      } else {
+        pintarJugada("blue",ancho-10,juego.oldVisita);
+        pintarJugada("red",ancho-5,juego.oldLocal);
+      }
     }
     
     //imprime marcador
