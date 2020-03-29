@@ -155,8 +155,7 @@ function actualEdad(edad,nacimiento){
   return edad;
 }
 
-var tiempo = -1;
-var avanzarJuego = null;
+var eventoMatch = null;
 function estadoJuego(snap){
   var match = snap.val();
   if (match == null){
@@ -177,14 +176,13 @@ function estadoJuego(snap){
   if (window.location.hash !== "#juego"){
     window.location.href = "#juego";
     setTimeout(function(){
-      if (avanzarJuego !== null){
-        avanzarJuego(match);
+      if (eventoMatch !== null){
+        eventoMatch(match);
       }
     },5000);
-  } else if (match.tiempo !== tiempo){
-    tiempo = match.tiempo;
-    if (avanzarJuego !== null){
-      avanzarJuego(match);
+  } else {
+    if (eventoMatch !== null){
+      eventoMatch(match);
     }
   }
 }
@@ -1214,6 +1212,7 @@ rutas.juego = function(vecUrl){
   if (alto > ancho){
     alto = ancho/2;
   }
+  
   var ctx;
   var cancha = document.getElementById("cancha");
   var piedra = document.getElementById("piedra");
@@ -1250,6 +1249,7 @@ rutas.juego = function(vecUrl){
     ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
   }
   
+  
   var eleccion = "";
   function inicioTouch(event){
     var i,h;
@@ -1277,6 +1277,13 @@ rutas.juego = function(vecUrl){
       eleccion = "";
     }
   }
+  function limpiarJugada(){
+    ctx.beginPath();
+    ctx.strokeStyle = "white";
+    ctx.moveTo(ancho*0.8,0);
+    ctx.lineTo(ancho*0.8,alto);
+    ctx.stroke();
+  }
   function pintarJugada(color,derecha,eleccion){
     var ini;
     switch(eleccion){
@@ -1297,16 +1304,28 @@ rutas.juego = function(vecUrl){
     ctx.lineTo(derecha,ini+delta);
     ctx.stroke();
   }
-  
+  var tiempo = -1;
+  var soy;
+  eventoMatch = function(juego){
+    soy = (juego.local == firebaseUID) ? "local" : "visitante";
+    
+    if(juego.tiempo !== tiempo){
+      tiempo = juego.tiempo;
+      avanzarJuego(juego);
+    } else {
+      limpiarJugada();
+      var miJuego = (soy === "local") ? juego.jugadaLocal : juego.jugadaVisitante;
+      pintarJugada("blue",ancho*0.8,eleccion);
+    }
+  }
   var pelota = [(ancho*0.8)/2,alto/2];
   var estadoAnterior = "centro";
   
-  avanzarJuego = function(juego){
-    var soy = (juego.local == firebaseUID) ? "local" : "visitante";
+  function avanzarJuego(juego){
     var marcador;
     
     repintar();
-     if(juego.oldVisita !=""){
+    if(juego.oldVisita !=""){
       pintarJugada("red",ancho-5,juego.oldVisita);
     }
     if(juego.oldLocal){
