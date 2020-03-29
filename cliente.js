@@ -1273,6 +1273,7 @@ rutas.juego = function(vecUrl){
   function finTouch(event){
     if(eleccion !== ""){
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
+      limpiarJugada();
       pintarJugada("blue",ancho*0.8,eleccion);
       eleccion = "";
     }
