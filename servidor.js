@@ -212,320 +212,373 @@ function motorJuego(juego){
       juego.estado = "fin";
     }
     return juego;
-  }
+}
 
-function backEnd(funcion,param,back){
-  var usuarioRef,jugadorRef,matchRef;
+function funNvoJugador(param,back){
   var database = firebase.database();
   var userId = firebase.auth().currentUser.uid;
-  switch(funcion){
-    case "nvoJugador":
-      jugadorRef = database.ref('jugadores/' + param.codigo);
-      jugadorRef.once('value').then(function(snapshot){
-        var datos = snapshot.val();
-        if (datos){
-          if (datos.propietario === ""){
-            datos.propietario = userId;
-            datos.nacimiento = Date.now();
-            jugadorRef.set(datos, function(error) {
-              if (error) {
-                back(false);
-              } else {
-                var usuarioRef = database.ref('usuarios/' + userId);
-                usuarioRef.once('value').then(function(snapshot){
-                  var datos = snapshot.val();
-                  if (datos){
-                    if (!datos.jugadores){
-                      datos.jugadores = [];
-                    }
-                    if (datos.jugadores.indexOf(param)<0){
-                      datos.jugadores.push(param.codigo);
-                      usuarioRef.set(datos, function(error) {
-                        if (error) {
-                          back(false);
-                        } else {
-                          back(true);
-                        }
-                      });
-                    } else {
-                      back(false);
-                    }
-                  } else {
-                    back(false);
-                  }
-                });
-              }
-            });
-          } else {
+  var jugadorRef = database.ref('jugadores/' + param.codigo);
+  jugadorRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos){
+      if (datos.propietario === ""){
+        datos.propietario = userId;
+        datos.nacimiento = Date.now();
+        jugadorRef.set(datos, function(error) {
+          if (error) {
             back(false);
-          }
-        } else {
-          back(false);
-        }
-      });
-      break;
-    case "misDatos":
-      usuarioRef = database.ref('usuarios/' + userId);
-      usuarioRef.once('value').then(function(snapshot){
-        var datos = snapshot.val();
-        if (datos){
-          back(datos);
-        } else {
-          datos = {
-            nombre: userId,
-            arquero: "0",
-            defensa: ["0","0","0","0"],
-            medio: ["0","0","0"],
-            ataque: ["0","0","0"],
-            jugados: 0,
-            ganados: 0,
-            empatados: 0,
-            nivel: 0,
-            jugadores: [],
-          };
-          usuarioRef.set(datos, function(error) {
-            if (error) {
-              back(null);
-            } else {
-              back(datos);
-            }
-          });
-        }
-      });
-      break;
-    case "setPosicion":
-      jugadorRef = database.ref('jugadores/' + param.jugador);
-      jugadorRef.once('value').then(function(snapshot){
-        var datos = snapshot.val();
-        if (datos){
-          if (datos.propietario === userId){
-            datos.posicion = param.posicion;
-            jugadorRef.set(datos, function(error) {
-              if (error) {
-                back(false);
-              } else {
-                back(true);
-              }
-            });
           } else {
-            back(false);
-          }
-        } else {
-          back(false);
-        }
-      });
-      break;
-    case "setEquipo":
-      usuarioRef = database.ref('usuarios/' + userId);
-      usuarioRef.once('value').then(function(snapshot){
-        function validar(){
-          function jugadorInvalido(codJugador){
-            //valida que sea mi jugador y no este en el equipo dos veces.
-            if (codJugador !== "0"){
-              if (datos.jugadores.indexOf(codJugador) >= 0){//es mi jugador
-                if (equipo.indexOf(codJugador) < 0){ //no esta en el equipo, todavia
-                  equipo.push(codJugador);
-                  return false;
+            var usuarioRef = database.ref('usuarios/' + userId);
+            usuarioRef.once('value').then(function(snapshot){
+              var datos = snapshot.val();
+              if (datos){
+                if (!datos.jugadores){
+                  datos.jugadores = [];
                 }
+                if (datos.jugadores.indexOf(param)<0){
+                  datos.jugadores.push(param.codigo);
+                  usuarioRef.set(datos, function(error) {
+                    if (error) {
+                      back(false);
+                    } else {
+                      back(true);
+                    }
+                  });
+                } else {
+                  back(false);
+                }
+              } else {
+                back(false);
               }
-              return true;
-            }
-            return false;//es suplente
+            });
           }
-
-          var equipo = [];
-
-          //arquero;
-          if (jugadorInvalido(param.arquero)){
-            return false;
+        });
+      } else {
+        back(false);
+      }
+    } else {
+      back(false);
+    }
+  });
+}
+function funMisDatos(back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var usuarioRef = database.ref('usuarios/' + userId);
+  usuarioRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos){
+      back(datos);
+    } else {
+      datos = {
+        nombre: userId,
+        arquero: "0",
+        defensa: ["0","0","0","0"],
+        medio: ["0","0","0"],
+        ataque: ["0","0","0"],
+        jugados: 0,
+        ganados: 0,
+        empatados: 0,
+        nivel: 0,
+        jugadores: [],
+      };
+      usuarioRef.set(datos, function(error) {
+        if (error) {
+          back(null);
+        } else {
+          back(datos);
+        }
+      });
+    }
+  });
+}
+function funSetPosicion(param,back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var jugadorRef = database.ref('jugadores/' + param.jugador);
+  jugadorRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos){
+      if (datos.propietario === userId){
+        datos.posicion = param.posicion;
+        jugadorRef.set(datos, function(error) {
+          if (error) {
+            back(false);
+          } else {
+            back(true);
           }
-
-          //defensa
-          var lng = param.defensa.length;
-          var lngt = lng;
-          if (lng<2 || lng>4){
-            return false;
-          }
-          var i;
-          for(i=0;i<lng;i++){
-            if (jugadorInvalido(param.defensa[i])){
-              return false;
-            }
-          }
-
-          //medio
-          lng = param.medio.length;
-          lngt += lng;
-          if (lng<2 || lng>4){
-            return false;
-          }
-          for(i=0;i<lng;i++){
-            if (jugadorInvalido(param.medio[i])){
-              return false;
-            }
-          }
-
-          //ataque
-          lng = param.ataque.length;
-          lngt += lng;
-          if (lng<2 || lng>4){
-            return false;
-          }
-          if (lngt>10){
-            return false;
-          }
-          for(i=0;i<lng;i++){
-            if (jugadorInvalido(param.ataque[i])){
+        });
+      } else {
+        back(false);
+      }
+    } else {
+      back(false);
+    }
+  });
+}
+function funSetEquipo(param,back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var usuarioRef = database.ref('usuarios/' + userId);
+  usuarioRef.once('value').then(function(snapshot){
+    function validar(){
+      function jugadorInvalido(codJugador){
+        //valida que sea mi jugador y no este en el equipo dos veces.
+        if (codJugador !== "0"){
+          if (datos.jugadores.indexOf(codJugador) >= 0){//es mi jugador
+            if (equipo.indexOf(codJugador) < 0){ //no esta en el equipo, todavia
+              equipo.push(codJugador);
               return false;
             }
           }
           return true;
         }
-        var datos = snapshot.val();
-        if (datos){
-          if (validar()){
-            datos.arquero = param.arquero;
-            datos.defensa = param.defensa.slice();
-            datos.medio = param.medio.slice();
-            datos.ataque = param.ataque.slice();
-            usuarioRef.set(datos, function(error) {
-              if (error) {
-                back(false);
-              } else {
-                back(true);
-              }
-            });
-          } else {
-            back(false);
-          }
-        } else {
-          back(false);
+        return false;//es suplente
+      }
+      var equipo = [];
+
+      //arquero;
+      if (jugadorInvalido(param.arquero)){
+        return false;
+      }
+
+      //defensa
+      var lng = param.defensa.length;
+      var lngt = lng;
+      if (lng<2 || lng>4){
+        return false;
+      }
+      var i;
+      for(i=0;i<lng;i++){
+        if (jugadorInvalido(param.defensa[i])){
+          return false;
         }
-      });
-      break;
-    case 'nvoNombre':
-      usuarioRef = database.ref('usuarios/' + userId);
-      usuarioRef.once('value').then(function(snapshot){
-        var datos = snapshot.val();
-        if (datos.nombre !== param.nombre){
-          var ref = firebase.database().ref("usuarios");
-          ref.orderByChild("nombre").equalTo(param.nombre).once("value", function(snapshot) {
-            var otros = snapshot.val();
-            if (otros === null){
-              datos.nombre = param.nombre;
-              usuarioRef.set(datos, function(error) {
-                back(datos);
-              });
-            } else {
-              back(datos);
-            }
-          },function(error){
-            console.error(error);
+      }
+
+      //medio
+      lng = param.medio.length;
+      lngt += lng;
+      if (lng<2 || lng>4){
+        return false;
+      }
+      for(i=0;i<lng;i++){
+        if (jugadorInvalido(param.medio[i])){
+          return false;
+        }
+      }
+
+      //ataque
+      lng = param.ataque.length;
+      lngt += lng;
+      if (lng<2 || lng>4){
+        return false;
+      }
+      if (lngt>10){
+        return false;
+      }
+      for(i=0;i<lng;i++){
+        if (jugadorInvalido(param.ataque[i])){
+          return false;
+        }
+      }
+      return true;
+    }
+    var datos = snapshot.val();
+    if (datos){
+      if (validar()){
+        datos.arquero = param.arquero;
+        datos.defensa = param.defensa.slice();
+        datos.medio = param.medio.slice();
+        datos.ataque = param.ataque.slice();
+        usuarioRef.set(datos, function(error) {
+          if (error) {
+            back(false);
+          } else {
+            back(true);
+          }
+        });
+      } else {
+        back(false);
+      }
+    } else {
+      back(false);
+    }
+  });
+}
+function funNvoNombre(param,back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var usuarioRef = database.ref('usuarios/' + userId);
+  usuarioRef.once('value').then(function(snapshot){
+    var datos = snapshot.val();
+    if (datos.nombre !== param.nombre){
+      var ref = firebase.database().ref("usuarios");
+      ref.orderByChild("nombre").equalTo(param.nombre).once("value", function(snapshot) {
+        var otros = snapshot.val();
+        if (otros === null){
+          datos.nombre = param.nombre;
+          usuarioRef.set(datos, function(error) {
             back(datos);
           });
         } else {
           back(datos);
         }
+      },function(error){
+        console.error(error);
+        back(datos);
       });
+    } else {
+      back(datos);
+    }
+  });
+}
+function funBuscarOponente(back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var matchRef = database.ref("matchs");
+  matchRef.orderByChild("visitante").equalTo("").once("value", function(snapshot) {
+    var match = snapshot.val();
+    if (match === null){ //no hay desafio, creo uno
+      var llave = matchRef.push({
+        local:userId,
+        visitante: "",
+        estado: "esperandoOponente",
+        poderLocal: null,
+        poderVisitante: null,
+        jugadaLocal: "",
+        jugadaVisitante: "",
+        marcador: [0,0],
+        tiempo: -1,
+        oldLocal:"",
+        oldVisita:"",
+      });
+      back(llave.key);
+    } else {//acepto el desafio
+      snapshot.forEach(function(childSnapshot) {
+        var key = childSnapshot.key;
+        var match = childSnapshot.val();
+        match.visitante = userId;
+        getPoderEquipo(match.local,function(poder){
+          match.poderLocal = poder;
+          getPoderEquipo(match.visitante,function(poder){
+            match.poderVisitante = poder;
+            match.estado = "centro";
+            match.tiempo = 0;
+            firebase.database().ref("matchs/"+key).set(match,function(error) {
+              if (error) {
+                back(null);
+              } else {
+                back(key);
+              }
+            });
+          });
+        });
+        return true;
+      });
+    }
+  });
+}
+function funNoJugar(param,back){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var matchRef = database.ref("matchs");
+  matchRef.orderByChild("visitante").equalTo(userId).once("value", function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      var key = childSnapshot.key;
+      database.ref('matchs/' + key).remove();
+    });
+  });
+  matchRef.orderByChild("local").equalTo(userId).once("value", function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      var key = childSnapshot.key;
+      database.ref('matchs/' + key).remove();
+    });
+  });
+}
+function funEnviarJugada(param){
+  var database = firebase.database();
+  var userId = firebase.auth().currentUser.uid;
+  var matchRef = database.ref("matchs/"+param.juego);
+  matchRef.once("value", function(snapshot) {
+    var match = snapshot.val();
+    if (match === null){
+      return;
+    }
+    var vecEstados = ["porIniciarse","esperandoOponente","fin"];
+    if (vecEstados.indexOf(match.estado)>=0){
+      return;
+    }
+    var guardar = false;
+    if (match.local === userId){
+      if (match.jugadaLocal === ""){
+        match.jugadaLocal = param.jugada;
+        guardar = true;
+      }
+    } else if (match.visitante == userId){
+      if (match.jugadaVisitante === ""){
+        match.jugadaVisitante = param.jugada;
+        guardar = true;
+      }
+    }
+    if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
+      match = motorJuego(match);
+      match.oldLocal = match.jugadaLocal;
+      match.oldVisita = match.jugadaVisitante;
+      match.jugadaLocal = "";
+      match.jugadaVisitante = "";
+      match.tiempo++;
+      if(match.tiempo > 100){
+        match.estado = "fin";
+      }
+      guardar = true;
+    }
+    if (guardar){
+      matchRef.set(match,function(error) {});
+    }
+  });
+}
+
+function backEnd(funcion,param,back){
+  switch(funcion){
+    case "nvoJugador":
+      setTimeout(function(){
+        funNvoJugador(param,back);
+      },100);
+      break;
+    case "misDatos":
+      setTimeout(function(){
+        funMisDatos(back);
+      },100);
+      break;
+    case "setPosicion":
+      setTimeout(function(){
+        funSetPosicion(param,back);
+      },100);
+      break;
+    case "setEquipo":
+      setTimeout(function(){
+        funSetEquipo(param,back);
+      },100);
+      break;
+    case 'nvoNombre':
+      setTimeout(function(){
+        funNvoNombre(param,back);
+      },100);
       break;
     case 'buscarOponente':
-      matchRef = firebase.database().ref("matchs");
-      matchRef.orderByChild("visitante").equalTo("").once("value", function(snapshot) {
-        var match = snapshot.val();
-        if (match === null){ //no hay desafio, creo uno
-          var llave = matchRef.push({
-            local:userId,
-            visitante: "",
-            estado: "esperandoOponente",
-            poderLocal: null,
-            poderVisitante: null,
-            jugadaLocal: "",
-            jugadaVisitante: "",
-            marcador: [0,0],
-            tiempo: -1,
-            oldLocal:"",
-            oldVisita:"",
-          });
-          back(llave.key);
-        } else {//acepto el desafio
-          snapshot.forEach(function(childSnapshot) {
-            var key = childSnapshot.key;
-            var match = childSnapshot.val();
-            match.visitante = userId;
-            getPoderEquipo(match.local,function(poder){
-              match.poderLocal = poder;
-              getPoderEquipo(match.visitante,function(poder){
-                match.poderVisitante = poder;
-                match.estado = "centro";
-                match.tiempo = 0;
-                firebase.database().ref("matchs/"+key).set(match,function(error) {
-                  if (error) {
-                    back(null);
-                  } else {
-                    back(key);
-                  }
-                });
-              });
-            });
-            return true;
-          });
-        }
-      });
+      setTimeout(function(){
+        funBuscarOponente(back);
+      },100);
       break;
     case 'noJugar':
-      matchRef = firebase.database().ref("matchs");
-      matchRef.orderByChild("visitante").equalTo(userId).once("value", function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-          var key = childSnapshot.key;
-          database.ref('matchs/' + key).remove();
-        });
-      });
-      matchRef.orderByChild("local").equalTo(userId).once("value", function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-          var key = childSnapshot.key;
-          database.ref('matchs/' + key).remove();
-        });
-      });
+      setTimeout(function(){
+        funNoJugar(param,back);
+      },100);
       break;
     case 'enviarJugada':
-      matchRef = firebase.database().ref("matchs/"+param.juego);
-      matchRef.once("value", function(snapshot) {
-        var match = snapshot.val();
-        if (match === null){
-          return;
-        }
-        var vecEstados = ["porIniciarse","esperandoOponente","fin"];
-        if (vecEstados.indexOf(match.estado)>=0){
-          return;
-        }
-        var guardar = false;
-        if (match.local === userId){
-          if (match.jugadaLocal === ""){
-            match.jugadaLocal = param.jugada;
-            guardar = true;
-          }
-        } else if (match.visitante == userId){
-          if (match.jugadaVisitante === ""){
-            match.jugadaVisitante = param.jugada;
-            guardar = true;
-          }
-        }
-        if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
-          match = motorJuego(match);
-          match.oldLocal = match.jugadaLocal;
-          match.oldVisita = match.jugadaVisitante;
-          match.jugadaLocal = "";
-          match.jugadaVisitante = "";
-          match.tiempo++;
-          if(match.tiempo > 100){
-            match.estado = "fin";
-          }
-          guardar = true;
-        }
-        if (guardar){
-          matchRef.set(match,function(error) {});
-        }
-      });
+      setTimeout(function(){
+        funEnviarJugada(param);
+      },100);
       break;
   }
 }
