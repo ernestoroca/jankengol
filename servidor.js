@@ -527,7 +527,7 @@ function funEnviarJugada(param){
       match.jugadaLocal = "";
       match.jugadaVisitante = "";
       match.tiempo++;
-      if(match.tiempo > 100){
+      if(match.tiempo > 200){
         match.estado = "fin";
       }
       guardar = true;
