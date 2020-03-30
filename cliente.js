@@ -1341,6 +1341,8 @@ rutas.juego = function(vecUrl){
         pintarJugada("blue",ancho*0.8,mijugada);
         eleccion = "";
       });
+      limpiarJugada();
+      pintarJugada("yellow",ancho*0.8,mijugada);
     }
   }
   function limpiarJugada(){
@@ -1512,5 +1514,6 @@ rutas.juego = function(vecUrl){
       ctx.fill();
     }
     estadoAnterior = juego.estado;
+    eleccion = "";
   }
 };
