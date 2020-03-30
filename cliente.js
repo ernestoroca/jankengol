@@ -1320,9 +1320,6 @@ rutas.juego = function(vecUrl){
   function inicioTouch(event){
     var i,h;
     var lng = event.touches.length;
-    if (eleccion !== ""){
-      return;
-    }
     for(i=0; i<lng; i++){
       if(event.touches[i].clientX >= ancho*0.8){
         h = event.touches[i].clientY;
