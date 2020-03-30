@@ -278,7 +278,6 @@ rutas.menu = function(){
       }
       cacheStorage.removeItem("llavesMatch");
     }
-    avanzarJuego = null;
   }
 };
 rutas.jugadores = function(){
