@@ -1320,6 +1320,9 @@ rutas.juego = function(vecUrl){
   function inicioTouch(event){
     var i,h;
     var lng = event.touches.length;
+    if (eleccion !== ""){
+      return;
+    }
     for(i=0; i<lng; i++){
       if(event.touches[i].clientX >= ancho*0.8){
         h = event.touches[i].clientY;
@@ -1336,9 +1339,11 @@ rutas.juego = function(vecUrl){
   }
   function finTouch(event){
     if(eleccion !== ""){
-      backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
-      limpiarJugada();
-      pintarJugada("blue",ancho*0.8,eleccion);
+      backEnd('enviarJugada',{juego:llave,jugada:eleccion},function(mijugada){
+        limpiarJugada();
+        pintarJugada("blue",ancho*0.8,mijugada);
+        eleccion = "";
+      });
     }
   }
   function limpiarJugada(){
