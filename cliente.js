@@ -300,7 +300,7 @@ rutas.jugadores = function(){
           <i class="material-icons">sports_soccer</i>Arqueros
         </div>
         <div class="collapsible-body">
-          <div class="collection" id="arquero">
+          <div class="row" id="arquero">
           </div>
         </div>
       </li>
@@ -309,7 +309,7 @@ rutas.jugadores = function(){
           <i class="material-icons">sports_soccer</i>Defensa
         </div>
         <div class="collapsible-body">
-          <div class="collection" id="defensa">
+          <div class="row" id="defensa">
           </div>
         </div>
       </li>
@@ -318,7 +318,7 @@ rutas.jugadores = function(){
           <i class="material-icons">sports_soccer</i>Medio Campo
         </div>
         <div class="collapsible-body">
-          <div class="collection" id="medio">
+          <div class="row" id="medio">
           </div>
         </div>
       </li>
@@ -327,7 +327,7 @@ rutas.jugadores = function(){
           <i class="material-icons">sports_soccer</i>Ataque
         </div>
         <div class="collapsible-body">
-          <div class="collection" id="ataque">
+          <div class="row" id="ataque">
           </div>
         </div>
       </li>
@@ -385,12 +385,55 @@ rutas.jugadores = function(){
     }
   }
   getJugadores();
-  function printJugadores(datos){
-    var A = document.createElement("A");
-    A.innerHTML = datos.nombre+" "+datos.apellido;
-    A.href = "#unjugador/" + datos.codigo;
-    A.classList.add("collection-item");
-    document.getElementById(datos.posicion).appendChild(A);
+  function printJugadores(jugador){
+    var nivel;
+    var edad = actualEdad(jugador.edad,jugador.nacimiento);
+    switch(jugador.posicion){
+      case "arquero":
+        nivel = actualRendimiento(jugador.arquero,edad);
+        break;
+      case "defensa":
+        nivel = actualRendimiento(jugador.defensa,edad);
+        break;
+      case "medio":
+        nivel = actualRendimiento(jugador.medio,edad);
+        break;
+      case "ataque":
+        nivel = actualRendimiento(jugador.ataque,edad);
+        break;
+    }
+    var strHtml;
+    {strHtml =`
+  <div class="card">
+    <div class="card-image">
+      <img src="${jugador.pais}.jpg">
+      <a href="#unjugador/${jugador.codigo}" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">loop</i></a>
+    </div>
+    <div class="card-content">
+      <h5 class="truncate">${jugador.nombre + " " + jugador.apellido}</h5>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <b>País:</b><br>
+              <b>Edad:</b><br>
+              <b>${jugador.posicion}: </b>
+            </td>
+            <td>
+              ${jugador.pais}<br>
+              ${edad.toFixed(1)}<br>
+              ${nivel.toFixed(1)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+    `;}
+    var div = document.createElement("DIV");
+    div.classList.add("col","s12");
+    div.innerHTML = strHtml;
+    document.getElementById(jugador.posicion).appendChild(div);
   }
   document.getElementById("enviar").onclick = function(){
     var cod1 = document.getElementById("cod1").value;
@@ -538,6 +581,28 @@ rutas.equipo = function(){
     <button id="nvoNombre" class="btn waves-effect waves-light">
     <i class="material-icons center">loop</i>
     </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col s12">
+    <table>
+      <thead>
+        <tr>
+          <th>Gan</th>
+          <th>Emp</th>
+          <th>Per</th>
+          <th>Pts</ht>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${misDatos.ganados}</td>
+          <td>${misDatos.empatados}</td>
+          <td>${misDatos.perdidos}</td>
+          <td>${misDatos.nivel}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 <div class="row">
