@@ -228,7 +228,7 @@ function finJuego(juego){
   localRef.once('value').then(function(snapshot){
     var datos = snapshot.val();
     if (datos){
-      datos.jugados++;
+      datos.perdidos += (resultado == -1) ? 1: 0;
       datos.ganados += (resultado == 1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
       datos.nivel += (resultado == 0) ? 1 : (resultado == 1 ? 3 : 0);
@@ -238,7 +238,7 @@ function finJuego(juego){
   visitaRef.once('value').then(function(snapshot){
     var datos = snapshot.val();
     if (datos){
-      datos.jugados++;
+      datos.perdidos += (resultado == 1) ? 1 : 0;
       datos.ganados += (resultado == -1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
       datos.nivel += (resultado == 0) ? 1 : (resultado == -1 ? 3 : 0);
@@ -309,7 +309,7 @@ function funMisDatos(back){
         defensa: ["0","0","0","0"],
         medio: ["0","0","0"],
         ataque: ["0","0","0"],
-        jugados: 0,
+        perdidos: 0,
         ganados: 0,
         empatados: 0,
         nivel: 0,
