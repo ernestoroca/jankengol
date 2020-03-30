@@ -1336,13 +1336,13 @@ rutas.juego = function(vecUrl){
   }
   function finTouch(event){
     if(eleccion !== ""){
+      limpiarJugada();
+      pintarJugada("yellow",ancho*0.8,eleccion);
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},function(mijugada){
         limpiarJugada();
         pintarJugada("blue",ancho*0.8,mijugada);
         eleccion = "";
       });
-      limpiarJugada();
-      pintarJugada("yellow",ancho*0.8,mijugada);
     }
   }
   function limpiarJugada(){
