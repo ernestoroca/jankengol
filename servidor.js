@@ -528,7 +528,7 @@ function funNoJugar(param,back){
     });
   });
 }
-function funEnviarJugada(param){
+function funEnviarJugada(param,back){
   var database = firebase.database();
   var userId = firebase.auth().currentUser.uid;
   var matchRef = database.ref("matchs/"+param.juego);
@@ -542,16 +542,19 @@ function funEnviarJugada(param){
       return;
     }
     var guardar = false;
+    var lajugada;
     if (match.local === userId){
       if (match.jugadaLocal === ""){
         match.jugadaLocal = param.jugada;
         guardar = true;
       }
+      lajugada = match.jugadaLocal;
     } else if (match.visitante == userId){
       if (match.jugadaVisitante === ""){
         match.jugadaVisitante = param.jugada;
         guardar = true;
       }
+      lajugada = match.jugadaVisitante;
     }
     if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
       match = motorJuego(match);
@@ -571,6 +574,7 @@ function funEnviarJugada(param){
     if (guardar){
       matchRef.set(match,function(error) {});
     }
+    back(lajugada)
   });
 }
 
@@ -613,7 +617,7 @@ function backEnd(funcion,param,back){
       break;
     case 'enviarJugada':
       setTimeout(function(){
-        funEnviarJugada(param);
+        funEnviarJugada(param,back);
       },100);
       break;
   }
