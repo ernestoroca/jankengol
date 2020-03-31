@@ -528,7 +528,7 @@ function funNoJugar(param,back){
     });
   });
 }
-function funEnviarJugada(param,back){
+function funEnviarJugada(param){
   var database = firebase.database();
   var userId = firebase.auth().currentUser.uid;
   var matchRef = database.ref("matchs/"+param.juego);
@@ -574,7 +574,6 @@ function funEnviarJugada(param,back){
     if (guardar){
       matchRef.set(match,function(error) {});
     }
-    back(lajugada)
   });
 }
 
@@ -617,7 +616,7 @@ function backEnd(funcion,param,back){
       break;
     case 'enviarJugada':
       setTimeout(function(){
-        funEnviarJugada(param,back);
+        funEnviarJugada(param);
       },100);
       break;
   }
