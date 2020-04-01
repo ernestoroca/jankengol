@@ -1379,14 +1379,14 @@ rutas.juego = function(vecUrl){
   var soy;
   eventoMatch = function(){
     soy = (match.local === firebaseUID) ? "local" : "visitante";
-    if(juego.tiempo !== tiempo){
+    if(match.tiempo !== tiempo){
       eleccion = "";
       tiempo = match.tiempo;
       repintar();
       avanzarJuego();
     } else {
       if (eleccion !== ""){
-        var miJuego = (soy === "local") ? juego.jugadaLocal : juego.jugadaVisitante;
+        var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisitante;
         if (miJuego === ""){
           backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
         }
