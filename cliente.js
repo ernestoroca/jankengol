@@ -1398,7 +1398,7 @@ rutas.juego = function(vecUrl){
     } else {
       debuguear("eventoMatch","eleccion=" + eleccion);
       if (eleccion !== ""){
-        var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisitante;
+        var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisita;
         debuguear("eventoMatch","miJuego=" + miJuego);
         if (miJuego === ""){
           backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
