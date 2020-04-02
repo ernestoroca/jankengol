@@ -116,7 +116,7 @@ function getPoderEquipo(codigo,clbk){
 }
 function motorJuego(juego){
     var res;
-    switch(juego.jugadaVisitante){
+    switch(juego.jugadaVisita){
       case "piedra":
         switch(juego.jugadaLocal){
           case "piedra":
@@ -126,14 +126,14 @@ function motorJuego(juego){
             res = "local";
             break;
           case "tijera":
-            res = "visitante";
+            res = "visita";
             break;
         }
         break;
       case "papel":
         switch(juego.jugadaLocal){
           case "piedra":
-            res = "visitante";
+            res = "visita";
             break;
           case "papel":
             res = "empate";
@@ -149,7 +149,7 @@ function motorJuego(juego){
             res = "local";
             break;
           case "papel":
-            res = "visitante";
+            res = "visita";
             break;
           case "tijera":
             res = "empate";
@@ -170,18 +170,18 @@ function motorJuego(juego){
         case "visita-medio":
         case "centro":
           valLocal = juego.poderLocal[1];
-          valVisita = juego.poderVisitante[1];
+          valVisita = juego.poderVisita[1];
           break;
         case "visita-defensa":
           valLocal = juego.poderLocal[2];
-          valVisita = juego.poderVisitante[0];
+          valVisita = juego.poderVisita[0];
           break;
       }
       var valTotal = valVisita + valLocal;
       if(valTotal*Math.random() <= valLocal){
         res = "local";
       } else {
-        res = "visitante";
+        res = "visita";
       }
     }
     
@@ -216,7 +216,7 @@ function motorJuego(juego){
 function finJuego(juego){
   var database = firebase.database();
   var localRef = database.ref('usuarios/' + juego.local);
-  var visitaRef = database.ref('usuarios/' + juego.visitante);
+  var visitaRef = database.ref('usuarios/' + juego.visita);
   var resultado;
   if (match.marcador[0] > match.marcador[1]){//gana local
     resultado = 1;
@@ -469,17 +469,17 @@ function funBuscarOponente(back){
   var database = firebase.database();
   var userId = firebase.auth().currentUser.uid;
   var matchRef = database.ref("matchs");
-  matchRef.orderByChild("visitante").equalTo("").once("value", function(snapshot) {
+  matchRef.orderByChild("visita").equalTo("").once("value", function(snapshot) {
     var match = snapshot.val();
     if (match === null){ //no hay desafio, creo uno
       var llave = matchRef.push({
         local:userId,
-        visitante: "",
+        visita: "",
         estado: "esperandoOponente",
         poderLocal: null,
-        poderVisitante: null,
+        poderVisita: null,
         jugadaLocal: "",
-        jugadaVisitante: "",
+        jugadaVisita: "",
         marcador: [0,0],
         tiempo: -1,
         oldLocal:"",
@@ -490,11 +490,11 @@ function funBuscarOponente(back){
       snapshot.forEach(function(childSnapshot) {
         var key = childSnapshot.key;
         var match = childSnapshot.val();
-        match.visitante = userId;
+        match.visita = userId;
         getPoderEquipo(match.local,function(poder){
           match.poderLocal = poder;
-          getPoderEquipo(match.visitante,function(poder){
-            match.poderVisitante = poder;
+          getPoderEquipo(match.visita,function(poder){
+            match.poderVisita = poder;
             match.estado = "centro";
             match.tiempo = 0;
             firebase.database().ref("matchs/"+key).set(match,function(error) {
@@ -515,7 +515,7 @@ function funNoJugar(param,back){
   var database = firebase.database();
   var userId = firebase.auth().currentUser.uid;
   var matchRef = database.ref("matchs");
-  matchRef.orderByChild("visitante").equalTo(userId).once("value", function(snapshot) {
+  matchRef.orderByChild("visita").equalTo(userId).once("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       var key = childSnapshot.key;
       database.ref('matchs/' + key).remove();
@@ -549,19 +549,19 @@ function funEnviarJugada(param){
         guardar = true;
       }
       lajugada = match.jugadaLocal;
-    } else if (match.visitante == userId){
-      if (match.jugadaVisitante === ""){
-        match.jugadaVisitante = param.jugada;
+    } else if (match.visita == userId){
+      if (match.jugadaVisita === ""){
+        match.jugadaVisita = param.jugada;
         guardar = true;
       }
-      lajugada = match.jugadaVisitante;
+      lajugada = match.jugadaVisita;
     }
-    if (match.jugadaLocal !== "" && match.jugadaVisitante !==""){
+    if (match.jugadaLocal !== "" && match.jugadaVisita !==""){
       match = motorJuego(match);
       match.oldLocal = match.jugadaLocal;
-      match.oldVisita = match.jugadaVisitante;
+      match.oldVisita = match.jugadaVisita;
       match.jugadaLocal = "";
-      match.jugadaVisitante = "";
+      match.jugadaVisita = "";
       match.tiempo++;
       if(match.tiempo > 200){
         match.estado = "fin";
