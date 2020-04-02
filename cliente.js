@@ -1350,8 +1350,8 @@ rutas.juego = function(vecUrl){
     }
   }
   function finTouch(event){
-    debuguear("finTouch","eleccion=" + eleccion);
     if(eleccion !== ""){
+      debuguear("finTouch","eleccion=" + eleccion);
       limpiarJugada();
       pintarJugada("blue",ancho*0.8,eleccion);
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
