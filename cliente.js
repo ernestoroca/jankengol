@@ -10,6 +10,14 @@ window.onload = iniciar;
 window.addEventListener("orientationchange", gestorOrientacion);
 window.onhashchange = reload;
 
+function debuguear(label,text){
+    firebase.database().ref('debuguer/' + firebaseUID).push().set({
+        time: Date.now(),
+        label: label,
+        text: text,
+    });
+}
+
 var cacheStorage = (function(){
     var datos;
     var strdat = localStorage.getItem('datos-cache');
@@ -1342,6 +1350,7 @@ rutas.juego = function(vecUrl){
     }
   }
   function finTouch(event){
+    debuguear("finTouch","eleccion=" + eleccion);
     if(eleccion !== ""){
       limpiarJugada();
       pintarJugada("blue",ancho*0.8,eleccion);
@@ -1379,14 +1388,18 @@ rutas.juego = function(vecUrl){
   var soy;
   eventoMatch = function(){
     soy = (match.local === firebaseUID) ? "local" : "visitante";
+    debuguear("eventoMatch","soy=" + soy);
     if(match.tiempo !== tiempo){
+      debuguear("eventoMatch","tiempo=" + tiempo);
       eleccion = "";
       tiempo = match.tiempo;
       repintar();
       avanzarJuego();
     } else {
+      debuguear("eventoMatch","eleccion=" + eleccion);
       if (eleccion !== ""){
         var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisitante;
+        debuguear("eventoMatch","miJuego=" + miJuego);
         if (miJuego === ""){
           backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
         }
