@@ -1387,7 +1387,7 @@ rutas.juego = function(vecUrl){
   var tiempo = -1;
   var soy;
   eventoMatch = function(){
-    soy = (match.local === firebaseUID) ? "local" : "visitante";
+    soy = (match.local === firebaseUID) ? "local" : "visita";
     debuguear("eventoMatch","soy=" + soy);
     if(match.tiempo !== tiempo){
       debuguear("eventoMatch","tiempo=" + tiempo);
