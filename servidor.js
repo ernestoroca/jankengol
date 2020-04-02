@@ -537,25 +537,31 @@ function funEnviarJugada(param){
     if (match === null){
       return;
     }
-    var vecEstados = ["porIniciarse","esperandoOponente","fin"];
+    var vecEstados = ["esperandoOponente","fin"];
     if (vecEstados.indexOf(match.estado)>=0){
       return;
     }
     var guardar = false;
     var lajugada;
+    debuguear("Server","jugada=" + param.jugada);
     if (match.local === userId){
+      debuguear("Server","jugadaLocal=" + match.jugadaLocal);
       if (match.jugadaLocal === ""){
         match.jugadaLocal = param.jugada;
         guardar = true;
+        debuguear("Server","jugadaLocal=" + match.jugadaLocal);
       }
       lajugada = match.jugadaLocal;
     } else if (match.visita == userId){
+      debuguear("Server","jugadaVisita=" + match.jugadaVisita);
       if (match.jugadaVisita === ""){
         match.jugadaVisita = param.jugada;
         guardar = true;
+        debuguear("Server","jugadaVisita=" + match.jugadaVisita);
       }
       lajugada = match.jugadaVisita;
     }
+    debuguear("Server","lajugada=" + lajugada);
     if (match.jugadaLocal !== "" && match.jugadaVisita !==""){
       match = motorJuego(match);
       match.oldLocal = match.jugadaLocal;
@@ -570,8 +576,10 @@ function funEnviarJugada(param){
       if (match.estado === "fin"){
         finJuego();
       }
+      debuguear("Server","tiempo=" + match.tiempo);
     }
     if (guardar){
+      debuguear("Server","guardando=true");
       matchRef.set(match,function(error) {});
     }
   });
