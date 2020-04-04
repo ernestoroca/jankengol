@@ -10,14 +10,6 @@ window.onload = iniciar;
 window.addEventListener("orientationchange", gestorOrientacion);
 window.onhashchange = reload;
 
-function debuguear(label,text){
-    firebase.database().ref('debuguer/' + firebaseUID).push().set({
-        time: Date.now(),
-        label: label,
-        text: text,
-    });
-}
-
 var cacheStorage = (function(){
     var datos;
     var strdat = localStorage.getItem('datos-cache');
@@ -174,12 +166,6 @@ function estadoJuego(snap){
     return;
   }
   if (match.estado == "esperandoOponente"){
-    return;
-  }
-  if (match.estado == "fin"){
-    setTimeout(function(){
-      window.location.href = "#menu";
-    },5000);
     return;
   }
   if (window.location.hash !== "#juego"){
@@ -1351,7 +1337,6 @@ rutas.juego = function(vecUrl){
   }
   function finTouch(event){
     if(eleccion !== ""){
-      debuguear("finTouch","eleccion=" + eleccion);
       limpiarJugada();
       pintarJugada("blue",ancho*0.8,eleccion);
       backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
@@ -1388,18 +1373,15 @@ rutas.juego = function(vecUrl){
   var soy;
   eventoMatch = function(){
     soy = (match.local === firebaseUID) ? "local" : "visita";
-    debuguear("eventoMatch","soy=" + soy);
     if(match.tiempo !== tiempo){
-      debuguear("eventoMatch","tiempo=" + tiempo);
       eleccion = "";
       tiempo = match.tiempo;
       repintar();
       avanzarJuego();
+      
     } else {
-      debuguear("eventoMatch","eleccion=" + eleccion);
       if (eleccion !== ""){
         var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisita;
-        debuguear("eventoMatch","miJuego=" + miJuego);
         if (miJuego === ""){
           backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
         }
@@ -1515,7 +1497,7 @@ rutas.juego = function(vecUrl){
         ctx.fillText("Fin del Juego",(ancho*0.8)/2, alto/2);
         setTimeout(function(){
           window.location.href = "#menu";
-        },5000);
+        },10000);
         document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
         return;
       }
