@@ -262,6 +262,17 @@ rutas.menu = function(){
   
   eventoMatch = null;
   if (misDatos !== null){
+    actualizar();
+  } else {
+    backEnd('misDatos',null,function(datos){
+      misDatos = datos;
+      if (!misDatos.jugadores) {
+        misDatos.jugadores = [];
+      }
+      actualizar();
+    });
+  } 
+  function actualizar(){
     backEnd('noJugar',null,function(){});
     var llavesStr = cacheStorage.getItem("llavesMatch");
     if (llavesStr !== null){
@@ -556,6 +567,10 @@ rutas.unjugador = function(vecUrl){
   }
 };
 rutas.equipo = function(){
+  if (misDatos === null){
+    window.location.href = "#menu";
+    return;
+  }
   var strHtml;
   {strHtml = `
 <nav class="red white-text">
@@ -682,10 +697,6 @@ rutas.equipo = function(){
   var poderAtaque = 0;
   
   function getEquipo(){
-    if (misDatos === null){
-      window.location.href = "#menu";
-      return;
-    }
     if (nvoEquipo === null){
       misDatos.defensa.sort(function(a,b){
         return b.localeCompare(a);
@@ -1496,6 +1507,7 @@ rutas.juego = function(vecUrl){
         ctx.textAlign = "center";
         ctx.fillText("Fin del Juego",(ancho*0.8)/2, alto/2);
         setTimeout(function(){
+          misDatos = null;
           window.location.href = "#menu";
         },10000);
         document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
