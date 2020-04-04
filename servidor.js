@@ -574,7 +574,7 @@ function funEnviarJugada(param){
       }
       guardar = true;
       if (match.estado === "fin"){
-        finJuego();
+        finJuego(match);
       }
       debuguear("Server","tiempo=" + match.tiempo);
     }
