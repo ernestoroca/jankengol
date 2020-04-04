@@ -543,25 +543,19 @@ function funEnviarJugada(param){
     }
     var guardar = false;
     var lajugada;
-    debuguear("Server","jugada=" + param.jugada);
     if (match.local === userId){
-      debuguear("Server","jugadaLocal=" + match.jugadaLocal);
       if (match.jugadaLocal === ""){
         match.jugadaLocal = param.jugada;
         guardar = true;
-        debuguear("Server","jugadaLocal=" + match.jugadaLocal);
       }
       lajugada = match.jugadaLocal;
     } else if (match.visita == userId){
-      debuguear("Server","jugadaVisita=" + match.jugadaVisita);
       if (match.jugadaVisita === ""){
         match.jugadaVisita = param.jugada;
         guardar = true;
-        debuguear("Server","jugadaVisita=" + match.jugadaVisita);
       }
       lajugada = match.jugadaVisita;
     }
-    debuguear("Server","lajugada=" + lajugada);
     if (match.jugadaLocal !== "" && match.jugadaVisita !==""){
       match = motorJuego(match);
       match.oldLocal = match.jugadaLocal;
@@ -576,10 +570,8 @@ function funEnviarJugada(param){
       if (match.estado === "fin"){
         finJuego(match);
       }
-      debuguear("Server","tiempo=" + match.tiempo);
     }
     if (guardar){
-      debuguear("Server","guardando=true");
       matchRef.set(match,function(error) {});
     }
   });
