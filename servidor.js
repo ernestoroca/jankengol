@@ -37,33 +37,84 @@ function getJugadorValor(codigo,posicion,clbk){
         nivel = actualRendimiento(jugador.ataque,edad);
         break;
     }
-    clbk(nivel);
+    clbk(nivel,edad,codigo);
   });
 }
 function getPoderEquipo(codigo,clbk){
-  firebase.database().ref('usuarios/' + codigo).once('value').then(function(snap){
+  var usuarioRef = firebase.database().ref('usuarios/' + codigo); 
+  usuarioRef.once('value').then(function(snap){
     var misDatos = snap.val();
-    
+    var listaJubilados = [];
     var poderLocal = [0,0,0];
     var llamadas = 0;
-    function setDefensa(nivel){
+    
+    function quitarJugador(id){
+      if (misDatos.arquero === id){
+        misDatos.arquero = id;
+      }
+      
+      var pos = misDatos.defensa.indexOf(id);
+      if (pos >= 0){
+        misDatos.defensa.splice(pos, 1);
+      }
+
+      pos = misDatos.medio.indexOf(id);
+      if (pos >= 0){
+        misDatos.medio.splice(pos, 1);
+      }
+      
+      pos = misDatos.ataque.indexOf(id);
+      if (pos >= 0){
+        misDatos.ataque.splice(pos, 1);
+      }
+      
+      pos = misDatos.jugadores.indexOf(id);
+      if (pos >= 0){
+        misDatos.jugadores.splice(pos, 1);
+      }
+    }
+    function jubilar(){
+      var lng = listaJubilados.length;
+      var i;
+      for (i=0;i<lng;i++){
+        quitarJugador(listaJubilados[i]);
+      }
+      usuarioRef.set(misDatos, function(error) {});
+    }
+    
+    function setDefensa(nivel,edad,codjugador){
+      if (edad>45){
+        listaJubilados.push(codjugador);
+        firebase.database().ref('jugadores/' + codjugador).remove();
+      }
       poderLocal[0] += nivel;
       llamadas--;
       if (llamadas === 0){
+        jubilar();
         clbk(poderLocal);
       }
     }
-    function setMedio(nivel){
+    function setMedio(nivel,edad,codjugador){
+      if (edad>45){
+        listaJubilados.push(codjugador);
+        firebase.database().ref('jugadores/' + codjugador).remove();
+      }
       poderLocal[1] += nivel;
       llamadas--;
       if (llamadas === 0){
+        jubilar();
         clbk(poderLocal);
       }
     }
-    function setAtaque(nivel){
+    function setAtaque(nivel,edad,codjugador){
+      if (edad>45){
+        listaJubilados.push(codjugador);
+        firebase.database().ref('jugadores/' + codjugador).remove();
+      }
       poderLocal[2] += nivel;
       llamadas--;
       if (llamadas === 0){
+        jubilar();
         clbk(poderLocal);
       }
     }
