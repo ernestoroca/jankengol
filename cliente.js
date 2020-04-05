@@ -1554,6 +1554,14 @@ rutas.juego = function(vecUrl){
 rutas.ranking = function(){
   var strHtml;
   {strHtml = `
+<nav class="red white-text">
+  <div class="nav-wrapper">
+    <a href="#menu" class="brand-logo center">
+      Jan Ken Gol
+    </a>
+  </div>
+</nav>
+<br>
 <table class="striped">
   <thead>
     <tr>
@@ -1568,6 +1576,10 @@ rutas.ranking = function(){
   </tbody>
 </table>
   `;}
+  var cuerpo = document.getElementsByTagName('body')[0];
+  cuerpo.innerHTML = strHtml;
+  cuerpo.style.overflow = "visible";
+
   function getEquipos(){
     var equiposStr = cacheStorage.getItem('ranking');
     var equipos;
