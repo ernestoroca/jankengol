@@ -79,7 +79,13 @@ function getPoderEquipo(codigo,clbk){
       for (i=0;i<lng;i++){
         quitarJugador(listaJubilados[i]);
       }
-      usuarioRef.set(misDatos, function(error) {});
+      usuarioRef.update({
+        arquero: misDatos.arquero,
+        defensa: misDatos.defensa,
+        medio: misDatos.medio,
+        ataque: misDatos.ataque,
+        jugadores: misDatos.jugadores,
+      });
     }
     
     function setDefensa(nivel,edad,codjugador){
@@ -283,7 +289,12 @@ function finJuego(juego){
       datos.ganados += (resultado == 1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
       datos.nivel += (resultado == 0) ? 1 : (resultado == 1 ? 3 : 0);
-      localRef.set(datos);
+      localRef.update({
+        perdidos: datos.perdidos,
+        ganados: datos.ganados,
+        empatados: datos.empatados,
+        nivel: datos.nivel,
+      });
     }
   });
   visitaRef.once('value').then(function(snapshot){
@@ -293,7 +304,12 @@ function finJuego(juego){
       datos.ganados += (resultado == -1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
       datos.nivel += (resultado == 0) ? 1 : (resultado == -1 ? 3 : 0);
-      visitaRef.set(datos);
+      visitaRef.update({
+        perdidos: datos.perdidos,
+        ganados: datos.ganados,
+        empatados: datos.empatados,
+        nivel: datos.nivel,
+      });
     }
   });
 }
@@ -306,35 +322,29 @@ function funNvoJugador(param,back){
     var datos = snapshot.val();
     if (datos){
       if (datos.propietario === ""){
-        datos.propietario = userId;
-        datos.nacimiento = Date.now();
-        jugadorRef.set(datos, function(error) {
-          if (error) {
-            back(false);
+        jugadorRef.update({
+          propietario: userId,
+          nacimiento: Date.now(),
+        });
+        
+        var usuarioRef = database.ref('usuarios/' + userId);
+        usuarioRef.once('value').then(function(snapshot){
+          var datos = snapshot.val();
+          if (datos){
+            if (!datos.jugadores){
+              datos.jugadores = [];
+            }
+            if (datos.jugadores.indexOf(param)<0){
+              datos.jugadores.push(param.codigo);
+              usuarioRef.update({
+                jugadores: datos.jugadores,
+              });
+              back(true);
+            } else {
+              back(false);
+            }
           } else {
-            var usuarioRef = database.ref('usuarios/' + userId);
-            usuarioRef.once('value').then(function(snapshot){
-              var datos = snapshot.val();
-              if (datos){
-                if (!datos.jugadores){
-                  datos.jugadores = [];
-                }
-                if (datos.jugadores.indexOf(param)<0){
-                  datos.jugadores.push(param.codigo);
-                  usuarioRef.set(datos, function(error) {
-                    if (error) {
-                      back(false);
-                    } else {
-                      back(true);
-                    }
-                  });
-                } else {
-                  back(false);
-                }
-              } else {
-                back(false);
-              }
-            });
+            back(false);
           }
         });
       } else {
@@ -384,14 +394,10 @@ function funSetPosicion(param,back){
     var datos = snapshot.val();
     if (datos){
       if (datos.propietario === userId){
-        datos.posicion = param.posicion;
-        jugadorRef.set(datos, function(error) {
-          if (error) {
-            back(false);
-          } else {
-            back(true);
-          }
+        jugadorRef.update({
+          posicion: param.posicion,
         });
+        back(true);
       } else {
         back(false);
       }
@@ -470,17 +476,13 @@ function funSetEquipo(param,back){
     var datos = snapshot.val();
     if (datos){
       if (validar()){
-        datos.arquero = param.arquero;
-        datos.defensa = param.defensa.slice();
-        datos.medio = param.medio.slice();
-        datos.ataque = param.ataque.slice();
-        usuarioRef.set(datos, function(error) {
-          if (error) {
-            back(false);
-          } else {
-            back(true);
-          }
+        usuarioRef.update({
+          arquero: param.arquero,
+          defensa: param.defensa.slice(),
+          medio: param.defensa.slice(),
+          ataque: param.ataque.slice(),
         });
+        back(true);
       } else {
         back(false);
       }
@@ -501,9 +503,10 @@ function funNvoNombre(param,back){
         var otros = snapshot.val();
         if (otros === null){
           datos.nombre = param.nombre;
-          usuarioRef.set(datos, function(error) {
-            back(datos);
+          usuarioRef.update({
+            nombre: param.nombre,
           });
+          back(datos);
         } else {
           back(datos);
         }
@@ -548,13 +551,14 @@ function funBuscarOponente(back){
             match.poderVisita = poder;
             match.estado = "centro";
             match.tiempo = 0;
-            firebase.database().ref("matchs/"+key).set(match,function(error) {
-              if (error) {
-                back(null);
-              } else {
-                back(key);
-              }
+            firebase.database().ref("matchs/"+key).update({
+              visita: userId,
+              poderLocal: match.poderLocal,
+              poderVisita: match.poderVisita,
+              estado: match.estado,
+              tiempo: match.tiempo,
             });
+            back(key);
           });
         });
         return true;
@@ -593,19 +597,17 @@ function funEnviarJugada(param){
       return;
     }
     var guardar = false;
-    var lajugada;
+    
     if (match.local === userId){
       if (match.jugadaLocal === ""){
         match.jugadaLocal = param.jugada;
         guardar = true;
       }
-      lajugada = match.jugadaLocal;
     } else if (match.visita == userId){
       if (match.jugadaVisita === ""){
         match.jugadaVisita = param.jugada;
         guardar = true;
       }
-      lajugada = match.jugadaVisita;
     }
     if (match.jugadaLocal !== "" && match.jugadaVisita !==""){
       match = motorJuego(match);
@@ -623,8 +625,38 @@ function funEnviarJugada(param){
       }
     }
     if (guardar){
-      matchRef.set(match,function(error) {});
+      var objUpdate = {
+        jugadaLocal: match.jugadaLocal,
+        jugadaVisita: match.jugadaVisita,
+        oldLocal: match.oldLocal,
+        oldVisita: match.oldVisita,
+        tiempo: match.tiempo,
+        estado: match.estado,
+        marcador: match.marcador,
+      };
+      
+      matchRef.update(objUpdate);
     }
+  });
+}
+function funRanking(back){
+  var refUsr = firebase.database().ref("usuarios");
+  //var query = refUsr.orderByChild("nivel").startAt(3).limit(5);
+  var query = refUsr.orderByChild("nivel").limitToLast(10);
+  query.once("value", function(snapshot) {
+    var equipos = [];
+    snapshot.forEach(function(data) {
+      var valor;
+      if (data){
+        valor = data.val();
+        equipos.push({
+          nombre: valor.nombre,
+          nivel: valor.nivel,
+        });
+      } else {
+        back(equipos);  
+      }
+    });
   });
 }
 
@@ -670,5 +702,9 @@ function backEnd(funcion,param,back){
         funEnviarJugada(param);
       },100);
       break;
+    case 'ranking':
+      setTimeout(function(){
+        funRanking(back);
+      },100); 
   }
 }
