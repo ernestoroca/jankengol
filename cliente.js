@@ -4,7 +4,6 @@
 var firebaseUID = "";
 var misDatos = null;
 var nvoEquipo = null;
-var alto,ancho;
 
 window.onload = iniciar;
 window.addEventListener("orientationchange", gestorOrientacion);
@@ -156,10 +155,10 @@ function actualEdad(edad,nacimiento){
 }
 
 var eventoMatch = null;
-var match;
+var match = null;
 function estadoJuego(snap){
   match = snap.val();
-  if (match == null){
+  if (match === null){
     setTimeout(function(){
       window.location.href = "#menu";
     },5000);
@@ -220,12 +219,17 @@ function reload(){
         rutas[vecUrl[0].replace("#","")](vecUrl);
     }
 }
+var pintarCancha = null;
+var alto,ancho;
 function gestorOrientacion(){
-  ancho = screen.availWidth;
   alto = screen.availHeight;
-  if (alto > ancho){
-    alto = ancho/2;
-    M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
+  ancho = screen.availWidth;
+  if (pintarCancha !== null){
+    pintarCancha();
+    if (alto > ancho){
+      alto = ancho/2;
+      M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
+    }
   }
 }
 
@@ -261,6 +265,7 @@ rutas.menu = function(){
   cuerpo.style.overflow = "visible";
   
   eventoMatch = null;
+  pintarCancha = null;
   if (misDatos !== null){
     actualizar();
   } else {
@@ -271,7 +276,7 @@ rutas.menu = function(){
       }
       actualizar();
     });
-  } 
+  }
   function actualizar(){
     backEnd('noJugar',null,function(){});
     var llavesStr = cacheStorage.getItem("llavesMatch");
@@ -1252,7 +1257,7 @@ rutas.esperando = function(){
       llaves.push(llave);
       cacheStorage.setItem("llavesMatch",JSON.stringify(llaves),4*7*24*60*60*1000);
       firebase.database().ref("matchs/"+llave).on("value",estadoJuego,function(error){
-        M.toast({html:"The read failed: " + errorObject.code});
+        M.toast({html:"The read failed: " + error.code});
       });
     }
   });
@@ -1277,14 +1282,12 @@ rutas.juego = function(vecUrl){
 <img src="piedra.png" hidden id="piedra">
 <img src="papel.png" hidden id="papel">
 <img src="tijera.png" hidden id="tijera">
-`;}
+  `;}
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "hidden";
   
-  ancho = screen.availWidth;
-  alto = screen.availHeight;
+  gestorOrientacion();
   if (alto > ancho){
-    alto = ancho/2;
     M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
   }
   
@@ -1294,13 +1297,14 @@ rutas.juego = function(vecUrl){
   var papel = document.getElementById("papel");
   var tijera = document.getElementById("tijera");
   var elemCanvas = document.getElementById("myCanvas");
+  
   elemCanvas.width = ancho;
   elemCanvas.height = alto;
   ctx = elemCanvas.getContext("2d");
   ctx.lineWidth = 5;
   elemCanvas.addEventListener('touchend',finTouch);
   elemCanvas.addEventListener('touchstart',inicioTouch);
-    
+  
   cancha.onload = function(){
     ctx.drawImage(cancha,0,0,ancho*0.8,alto);
   };
@@ -1314,6 +1318,9 @@ rutas.juego = function(vecUrl){
     ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
   };
   function repintar(){
+    elemCanvas.width = ancho;
+    elemCanvas.height = alto;
+    
     ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.fillRect (ancho*0.7,0,ancho*0.3,alto);
@@ -1327,6 +1334,7 @@ rutas.juego = function(vecUrl){
   
   var eleccion = "";
   function inicioTouch(event){
+    var altox = (alto > ancho) ? ancho/2 : alto;
     if (eleccion !== ""){
       return;
     }
@@ -1335,9 +1343,9 @@ rutas.juego = function(vecUrl){
     for(i=0; i<lng; i++){
       if(event.touches[i].clientX >= ancho*0.8){
         h = event.touches[i].clientY;
-        if (h<=alto*0.33){
+        if (h <= altox*0.33){
             eleccion = "piedra";
-        } else if (h<=alto*0.66){
+        } else if (h <= altox*0.66){
             eleccion = "papel";
         } else {
             eleccion = "tijera";
@@ -1387,9 +1395,7 @@ rutas.juego = function(vecUrl){
     if(match.tiempo !== tiempo){
       eleccion = "";
       tiempo = match.tiempo;
-      repintar();
       avanzarJuego();
-      
     } else {
       if (eleccion !== ""){
         var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisita;
@@ -1404,7 +1410,21 @@ rutas.juego = function(vecUrl){
   var estadoAnterior = "centro";
   
   function avanzarJuego(){
+    pintarCancha();
+    estadoAnterior = match.estado;
+    if (match.estado == "fin"){
+      setTimeout(function(){
+        misDatos = null;
+        window.location.href = "#menu";
+      },10000);
+      document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
+    }
+  }
+  
+  pintarCancha = function(){
     var marcador;
+    
+    repintar();
     
     //imprime la anterior jugada, si existe
     if(match.oldLocal !== ""){
@@ -1423,14 +1443,15 @@ rutas.juego = function(vecUrl){
     } else {
       marcador = String(match.marcador[1]) + " - " + String(match.marcador[0]);
     }
-    var offset;
+    
     ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
     ctx.fillText(marcador,(ancho*0.8)/2, 20);
-
+    
     //determina color, en base a quien gano
+    var offset;
     var color;
     switch(estadoAnterior){
       case "local-defensa":
@@ -1490,7 +1511,7 @@ rutas.juego = function(vecUrl){
       case "centro":
         x = 0.5;
     }
-     
+    
     //imprime el juego
     if (match.estado == "centro" || match.estado == "fin"){
       ctx.beginPath();
@@ -1506,12 +1527,6 @@ rutas.juego = function(vecUrl){
         ctx.fillStyle = color;
         ctx.textAlign = "center";
         ctx.fillText("Fin del Juego",(ancho*0.8)/2, alto/2);
-        setTimeout(function(){
-          misDatos = null;
-          window.location.href = "#menu";
-        },10000);
-        document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
-        return;
       }
     } else {
       ctx.beginPath();
@@ -1527,6 +1542,6 @@ rutas.juego = function(vecUrl){
       ctx.arc(pelota[0],pelota[1],5,0,2 * Math.PI, false);
       ctx.fill();
     }
-    estadoAnterior = match.estado;
-  }
+    
+  };
 };
