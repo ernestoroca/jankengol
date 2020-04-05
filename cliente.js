@@ -1562,19 +1562,23 @@ rutas.ranking = function(){
   </div>
 </nav>
 <br>
-<table class="striped">
-  <thead>
-    <tr>
-      <th>Equipo</th>
-      <th>Gan</th>
-      <th>Emp</th>
-      <th>Per</th>
-      <th>Pts</th>
-    </tr>
-  </thead>
-  <tbody id="lista">
-  </tbody>
-</table>
+<div class="row" style="overflow-x:scroll">
+  <div class="col s12">
+    <table class="striped" style="overflow-x: scroll">
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Gan</th>
+          <th>Emp</th>
+          <th>Per</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+      <tbody id="lista">
+      </tbody>
+    </table>
+  </div>
+</div>
   `;}
   var cuerpo = document.getElementsByTagName('body')[0];
   cuerpo.innerHTML = strHtml;
