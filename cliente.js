@@ -1594,6 +1594,7 @@ rutas.ranking = function(){
     }
   }
   function printEquipos(equipos){
+    equipos.sort(function(a, b){return b.puntos - a.puntos});
     var lng = equipos.length;
     var i;
     var lista ="";
