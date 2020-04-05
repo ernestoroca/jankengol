@@ -644,20 +644,19 @@ function funRanking(back){
   //var query = refUsr.orderByChild("nivel").startAt(3).limit(5);
   var query = refUsr.orderByChild("nivel").limitToLast(10);
   query.once("value", function(snapshot) {
+    var lng = snapshot.numChildren();
     var equipos = [];
     snapshot.forEach(function(data) {
-      var valor;
-      if (data){
-        valor = data.val();
-        equipos.push({
-          nombre: valor.nombre,
-          nivel: valor.nivel,
-          ganados: valor.ganados,
-          empatados: valor.empatados,
-          perdidos: valor.perdidos,
-        });
-      } else {
-        back(equipos);  
+      var valor = data.val();
+      equipos.push({
+        nombre: valor.nombre,
+        puntos: valor.nivel,
+        ganados: valor.ganados,
+        empatados: valor.empatados,
+        perdidos: valor.perdidos,
+      });
+      if (equipos.length === lng){
+        back(equipos);
       }
     });
   });
