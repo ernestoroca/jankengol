@@ -652,6 +652,9 @@ function funRanking(back){
         equipos.push({
           nombre: valor.nombre,
           nivel: valor.nivel,
+          ganados: valor.ganados,
+          empatados: valor.empatados,
+          perdidos: valor.perdidos,
         });
       } else {
         back(equipos);  
