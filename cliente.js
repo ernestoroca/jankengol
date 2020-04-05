@@ -260,6 +260,10 @@ rutas.menu = function(){
         <img class="responsive-img" src="jugar.jpg"><br>
         ¡A Jugar!
     </div>
+    <div class="col s6 center" onclick="window.location.href='#ranking'">
+        <img class="responsive-img" src="ranking.jpg"><br>
+        ¡A Jugar!
+    </div>
 </div>
   `;}
   var cuerpo = document.getElementsByTagName('body')[0];
