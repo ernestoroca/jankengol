@@ -262,7 +262,7 @@ rutas.menu = function(){
     </div>
     <div class="col s6 center" onclick="window.location.href='#ranking'">
         <img class="responsive-img" src="ranking.jpg"><br>
-        ¡A Jugar!
+        Ranking
     </div>
 </div>
   `;}
@@ -1550,4 +1550,10 @@ rutas.juego = function(vecUrl){
     }
     
   };
+};
+rutas.ranking = function(){
+    var ref = firebase.database().ref("usuarios");
+    ref.orderByChild("nivel").limitToLast(5).once("value", function(snapshot) {
+        console.log(snapshot.key + " was " + snapshot.val().height + " m tall");
+    });
 };
