@@ -224,10 +224,12 @@ var alto,ancho;
 function gestorOrientacion(){
   alto = screen.availHeight;
   ancho = screen.availWidth;
+  if (alto > ancho){
+    alto = ancho/2;
+  }
   if (pintarCancha !== null){
     pintarCancha();
     if (alto > ancho){
-      alto = ancho/2;
       M.toast({html:"¡Ponga su teléfono en forma horizontal!"});
     }
   }
