@@ -1552,8 +1552,51 @@ rutas.juego = function(vecUrl){
   };
 };
 rutas.ranking = function(){
-    var ref = firebase.database().ref("usuarios");
-    ref.orderByChild("nivel").limitToLast(5).once("value", function(snapshot) {
-        console.log(snapshot.key + " was " + snapshot.val().height + " m tall");
-    });
+  var strHtml;
+  {strHtml = `
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Equipo</th>
+      <th>Gan</th>
+      <th>Emp</th>
+      <th>Per</th>
+      <th>Pts</th>
+    </tr>
+  </thead>
+  <tbody id="lista">
+  </tbody>
+</table>
+  `;}
+  function getEquipos(){
+    var equiposStr = cacheStorage.getItem('ranking');
+    var equipos;
+    if (equiposStr !== null){
+      equipos = JSON.parse(equiposStr);
+      printEquipos(equipos);
+    } else {
+      backEnd('ranking',null,function(datos){
+        cacheStorage.setItem("ranking",JSON.stringify(datos),4*60*60*1000);
+        printEquipos(datos);
+      });
+    }
+  }
+  function printEquipos(equipos){
+    var lng = equipos.length;
+    var i;
+    var lista ="";
+    for (i=0;i<lng;i++){
+      {lista += `
+<tr>
+  <td>${equipos[i].nombre}</td>
+  <td>${equipos[i].ganados}</td>
+  <td>${equipos[i].empatados}</td>
+  <td>${equipos[i].perdidos}</td>
+  <td>${equipos[i].puntos}</td>
+</tr>
+      `;}
+    }
+    document.getElementById("lista").innerHTML = lista;
+  }
+  getEquipos();
 };
