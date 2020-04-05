@@ -268,7 +268,7 @@ rutas.menu = function(){
   pintarCancha = null;
   if (misDatos !== null){
     actualizar();
-  } else {
+  } else if (firebaseUID !== ""){
     backEnd('misDatos',null,function(datos){
       misDatos = datos;
       if (!misDatos.jugadores) {
