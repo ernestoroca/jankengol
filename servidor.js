@@ -275,9 +275,9 @@ function finJuego(juego){
   var localRef = database.ref('usuarios/' + juego.local);
   var visitaRef = database.ref('usuarios/' + juego.visita);
   var resultado;
-  if (match.marcador[0] > match.marcador[1]){//gana local
+  if (juego.marcador[0] > juego.marcador[1]){//gana local
     resultado = 1;
-  } else if (match.marcador[0] < match.marcador[1]){//gana visita
+  } else if (juego.marcador[0] < juego.marcador[1]){//gana visita
     resultado = -1;
   } else { //empate
     resultado = 0;
@@ -288,12 +288,16 @@ function finJuego(juego){
       datos.perdidos += (resultado == -1) ? 1: 0;
       datos.ganados += (resultado == 1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
+      datos.favor += juego.marcador[0];
+      datos.contra += juego.marcador[1];
       datos.nivel += (resultado == 0) ? 1 : (resultado == 1 ? 3 : 0);
       localRef.update({
         perdidos: datos.perdidos,
         ganados: datos.ganados,
         empatados: datos.empatados,
         nivel: datos.nivel,
+        favor: datos.favor,
+        contra: datos.contra,
       });
     }
   });
@@ -303,12 +307,16 @@ function finJuego(juego){
       datos.perdidos += (resultado == 1) ? 1 : 0;
       datos.ganados += (resultado == -1) ? 1 : 0;
       datos.empatados += (resultado == 0) ? 1 : 0;
+      datos.favor += juego.marcador[1];
+      datos.contra += juego.marcador[0];
       datos.nivel += (resultado == 0) ? 1 : (resultado == -1 ? 3 : 0);
       visitaRef.update({
         perdidos: datos.perdidos,
         ganados: datos.ganados,
         empatados: datos.empatados,
         nivel: datos.nivel,
+        favor: datos.favor,
+        contra: datos.contra,
       });
     }
   });
@@ -634,7 +642,6 @@ function funEnviarJugada(param){
         estado: match.estado,
         marcador: match.marcador,
       };
-      
       matchRef.update(objUpdate);
     }
   });
@@ -654,6 +661,8 @@ function funRanking(back){
         ganados: valor.ganados,
         empatados: valor.empatados,
         perdidos: valor.perdidos,
+        favor: valor.favor,
+        contra: valor.contra,
       });
       if (equipos.length === lng){
         back(equipos);
