@@ -383,6 +383,8 @@ function funMisDatos(back){
         empatados: 0,
         nivel: 0,
         jugadores: [],
+        favor: 0,
+        contra: 0,
       };
       usuarioRef.set(datos, function(error) {
         if (error) {
