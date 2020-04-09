@@ -272,6 +272,7 @@ rutas.menu = function(){
   
   eventoMatch = null;
   pintarCancha = null;
+  match = null;
   if (misDatos !== null){
     actualizar();
   } else if (firebaseUID !== ""){
@@ -1337,7 +1338,7 @@ rutas.juego = function(vecUrl){
     ctx.drawImage(tijera, ancho*0.8, alto*0.67,ancho*0.20,alto*0.33);
   }
   
-  
+  var temporizador;
   var eleccion = "";
   function inicioTouch(event){
     var altox = (alto > ancho) ? ancho/2 : alto;
@@ -1394,14 +1395,45 @@ rutas.juego = function(vecUrl){
     ctx.lineTo(derecha,ini+delta);
     ctx.stroke();
   }
+  function pintarNombres(){
+    ctx.beginPath();
+    ctx.fillStyle = "blue";
+    ctx.textAlign = "center";
+    ctx.fillText(match.nombLocal,(ancho*0.8)/4, alto/2);
+    
+    ctx.beginPath();
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.fillText(match.nombVisita,(ancho*0.8)*3/4, alto/2);
+  }
   var tiempo = -1;
   var soy;
   eventoMatch = function(){
     soy = (match.local === firebaseUID) ? "local" : "visita";
     if(match.tiempo !== tiempo){
+      if (temporizador) {
+        clearTimeout(temporizador);
+      }
       eleccion = "";
+      pintarCancha();
+      if (tiempo === -1){
+        pintarNombres();
+      }
       tiempo = match.tiempo;
-      avanzarJuego();
+      estadoAnterior = match.estado;
+      temporizador = setTimeout(function(){
+        if (eleccion === ""){
+          var dado = Math.random();
+          if (dado<=0.33){
+            eleccion = "piedra";
+          } else if (dado<=0.66){
+            eleccion = "papel";
+          } else {
+            eleccion = "tijera";
+          }
+        }
+        backEnd('enviarJugada',{juego:llave,jugada:eleccion},null);
+      },10000);
     } else {
       if (eleccion !== ""){
         var miJuego = (soy === "local") ? match.jugadaLocal : match.jugadaVisita;
@@ -1410,14 +1442,6 @@ rutas.juego = function(vecUrl){
         }
       }
     }
-  };
-  
-  var pelota = [(ancho*0.8)/2,alto/2];
-  var estadoAnterior = "centro";
-  
-  function avanzarJuego(){
-    pintarCancha();
-    estadoAnterior = match.estado;
     if (match.estado == "fin"){
       setTimeout(function(){
         misDatos = null;
@@ -1425,7 +1449,10 @@ rutas.juego = function(vecUrl){
       },10000);
       document.getElementById("myCanvas").removeEventListener('touchend',finTouch);
     }
-  }
+  };
+  
+  var pelota = [(ancho*0.8)/2,alto/2];
+  var estadoAnterior = "centro";
   
   pintarCancha = function(){
     var marcador;
