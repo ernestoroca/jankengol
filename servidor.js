@@ -167,7 +167,7 @@ function getPoderEquipo(codigo,clbk){
       }
     }
     if (llamadas === 0){
-      clbk(poderLocal);
+      clbk(poderLocal,misDatos.nombre);
     }
   });
 }
@@ -538,6 +538,8 @@ function funBuscarOponente(back){
     if (match === null){ //no hay desafio, creo uno
       var llave = matchRef.push({
         local:userId,
+        nombLocal: "",
+        nombVisita: "",
         visita: "",
         estado: "esperandoOponente",
         poderLocal: null,
@@ -555,10 +557,12 @@ function funBuscarOponente(back){
         var key = childSnapshot.key;
         var match = childSnapshot.val();
         match.visita = userId;
-        getPoderEquipo(match.local,function(poder){
+        getPoderEquipo(match.local,function(poder,nomloc){
           match.poderLocal = poder;
-          getPoderEquipo(match.visita,function(poder){
+          match.nombLocal = nomloc;
+          getPoderEquipo(match.visita,function(poder,nomvis){
             match.poderVisita = poder;
+            match.nombVisita = nomvis;
             match.estado = "centro";
             match.tiempo = 0;
             firebase.database().ref("matchs/"+key).update({
