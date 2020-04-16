@@ -33,4 +33,24 @@ exports.misDatos = functions.https.onCall((data, context) => {
         return datos;
     });
 });
+exports.noJugar = functions.https.onCall((data, context) => {
+    if (!context.auth) {
+        return null;
+    }
+    const userId = context.auth.uid;
+    var database = admin.database();
+    var matchRef = database.ref("matchs");
+    matchRef.orderByChild("visita").equalTo(userId).once("value", function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var key = childSnapshot.key;
+        database.ref('matchs/' + key).remove();
+      });
+    });
+    matchRef.orderByChild("local").equalTo(userId).once("value", function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var key = childSnapshot.key;
+        database.ref('matchs/' + key).remove();
+      });
+    });
+});
 
