@@ -180,6 +180,9 @@ function estadoJuego(snap){
     }
   }
 }
+
+var backEnd_misDatos;
+var backEnd_noJugar;
 function iniciar(){
   var firebaseConfig = {
     apiKey: "AIzaSyAE0BFC11pL8LAsmzfKojGAkxiwt5-sbBo",
@@ -196,17 +199,22 @@ function iniciar(){
     if (user) {
       var isAnonymous = user.isAnonymous;
       firebaseUID = user.uid;
-      backEnd('misDatos',null,function(datos){
-        misDatos = datos;
-        if (!misDatos.jugadores) {
-          misDatos.jugadores = [];
-        }
-        backEnd('noJugar',null,function(){});
+      backEnd_misDatos().then(function(datos){
+          if (datos){
+              misDatos = datos;
+              if (!misDatos.jugadores) {
+                  misDatos.jugadores = [];
+              }
+              backEnd_noJugar();
+          }
       });
     } else {
       firebase.auth().signInAnonymously();
     }
   });
+    
+  backEnd_misDatos = firebase.functions().httpsCallable('misDatos');
+  backEnd_noJugar = firebase.functions().httpsCallable('noJugar');
   window.location.herf="#menu";
   reload();
 }
@@ -276,7 +284,7 @@ rutas.menu = function(){
   if (misDatos !== null){
     actualizar();
   } else if (firebaseUID !== ""){
-    backEnd('misDatos',null,function(datos){
+    backEnd_misDatos().then(function(datos){
       misDatos = datos;
       if (!misDatos.jugadores) {
         misDatos.jugadores = [];
@@ -285,7 +293,7 @@ rutas.menu = function(){
     });
   }
   function actualizar(){
-    backEnd('noJugar',null,function(){});
+    backEnd_noJugar();
     var llavesStr = cacheStorage.getItem("llavesMatch");
     if (llavesStr !== null){
       var llaves = JSON.parse(llavesStr);
@@ -473,7 +481,7 @@ rutas.jugadores = function(){
     }
     backEnd('nvoJugador',{codigo: cod1+cod2+cod3},function(res){
       if(res){
-        backEnd('misDatos',null,function(datos){
+        backEnd_misDatos().then(function(datos){
           misDatos = datos;
           if (!misDatos.jugadores) {
             misDatos.jugadores = [];
@@ -1051,7 +1059,7 @@ rutas.equipo = function(){
     backEnd('setEquipo',nvoEquipo,function(res){
       if(res){
         nvoEquipo = null;
-        backEnd('misDatos',null,function(datos){
+        backEnd_misDatos().then(function(datos){
           misDatos = datos;
           if (!misDatos.jugadores) {
             misDatos.jugadores = [];
