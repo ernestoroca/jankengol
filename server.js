@@ -11,7 +11,7 @@ exports.misDatos = functions.https.onCall((data, context) => {
     const userId = context.auth.uid;
     var database = admin.database();
     var usuarioRef = database.ref('usuarios/' + userId);
-    return usuarioRef.once('value').then(function(snapshot){
+    return usuarioRef.once('value').then((snapshot) => {
         var datos = snapshot.val();
         if (!datos){
             datos = {
@@ -40,14 +40,14 @@ exports.noJugar = functions.https.onCall((data, context) => {
     const userId = context.auth.uid;
     var database = admin.database();
     var matchRef = database.ref("matchs");
-    matchRef.orderByChild("visita").equalTo(userId).once("value", function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
+    matchRef.orderByChild("visita").equalTo(userId).once("value", (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
         var key = childSnapshot.key;
         database.ref('matchs/' + key).remove();
       });
     });
-    matchRef.orderByChild("local").equalTo(userId).once("value", function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
+    matchRef.orderByChild("local").equalTo(userId).once("value", (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
         var key = childSnapshot.key;
         database.ref('matchs/' + key).remove();
       });
