@@ -183,6 +183,7 @@ function estadoJuego(snap){
 
 var backEnd_misDatos;
 var backEnd_noJugar;
+var backEnd_nvoNombre;
 function iniciar(){
   var firebaseConfig = {
     apiKey: "AIzaSyAE0BFC11pL8LAsmzfKojGAkxiwt5-sbBo",
@@ -201,7 +202,7 @@ function iniciar(){
       firebaseUID = user.uid;
       backEnd_misDatos().then(function(datos){
           if (datos){
-              misDatos = datos;
+              misDatos = datos.data;
               if (!misDatos.jugadores) {
                   misDatos.jugadores = [];
               }
@@ -215,6 +216,7 @@ function iniciar(){
     
   backEnd_misDatos = firebase.functions().httpsCallable('misDatos');
   backEnd_noJugar = firebase.functions().httpsCallable('noJugar');
+  backEnd_nvoNombre = firebase.functions().httpsCallable('nvoNombre');
   window.location.herf="#menu";
   reload();
 }
@@ -285,7 +287,7 @@ rutas.menu = function(){
     actualizar();
   } else if (firebaseUID !== ""){
     backEnd_misDatos().then(function(datos){
-      misDatos = datos;
+      misDatos = datos.data;
       if (!misDatos.jugadores) {
         misDatos.jugadores = [];
       }
@@ -482,7 +484,7 @@ rutas.jugadores = function(){
     backEnd('nvoJugador',{codigo: cod1+cod2+cod3},function(res){
       if(res){
         backEnd_misDatos().then(function(datos){
-          misDatos = datos;
+          misDatos = datos.data;
           if (!misDatos.jugadores) {
             misDatos.jugadores = [];
           }
@@ -1060,7 +1062,7 @@ rutas.equipo = function(){
       if(res){
         nvoEquipo = null;
         backEnd_misDatos().then(function(datos){
-          misDatos = datos;
+          misDatos = datos.data;
           if (!misDatos.jugadores) {
             misDatos.jugadores = [];
           }
@@ -1074,8 +1076,8 @@ rutas.equipo = function(){
     var elemNombre = document.getElementById("nombre");
     var nombre = elemNombre.value;
     if (nombre !== ""){
-      backEnd('nvoNombre',{nombre:nombre},function(datos){
-        misDatos = datos;
+      backEnd_nvoNombre(nombre).then(function(datos){
+        misDatos = datos.data;
         if (!misDatos.jugadores) {
           misDatos.jugadores = [];
         }
