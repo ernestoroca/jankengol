@@ -61,7 +61,7 @@ exports.nvoNombre = functions.https.onCall((nombre, context) => {
   return usuarioRef.once('value').then((snapshot) => {
     var datos = snapshot.val();
     if (datos.nombre !== nombre){
-      var ref = firebase.database().ref("usuarios");
+      var ref = database.ref("usuarios");
       return ref.orderByChild("nombre").equalTo(nombre).once("value", (snapshot) => {
         var otros = snapshot.val();
         if (otros === null){
