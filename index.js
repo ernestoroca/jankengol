@@ -117,10 +117,10 @@ exports.nvoJugador = functions.https.onCall((codigo, context) => {
   });
 });
 
-exports.setPosicion = functions.https.onCall((codigo, context) => {
+exports.setPosicion = functions.https.onCall((param, context) => {
   const userId = context.auth.uid;
   var database = admin.database();
-  var jugadorRef = database.ref('jugadores/' + codigo);
+  var jugadorRef = database.ref('jugadores/' + param.codigo);
   return jugadorRef.once('value').then((snapshot) => {
     var datos = snapshot.val();
     if (datos){
