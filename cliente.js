@@ -186,6 +186,7 @@ var backEnd_noJugar;
 var backEnd_nvoNombre;
 var backEnd_nvoJugador;
 var backEnd_setPosicion;
+var backEnd_setEquipo;
 function iniciar(){
   firebase.initializeApp(firebaseConfig);
   firebase.auth().signInAnonymously();
@@ -212,6 +213,7 @@ function iniciar(){
   backEnd_nvoNombre = firebase.functions().httpsCallable('nvoNombre');
   backEnd_nvoJugador = firebase.functions().httpsCallable('nvoJugador');
   backEnd_setPosicion = firebase.functions().httpsCallable('setPosicion');
+  backEnd_setEquipo = firebase.functions().httpsCallable('setEquipo');
   window.location.herf="#menu";
   reload();
 }
@@ -1053,7 +1055,7 @@ rutas.equipo = function(){
     }
     
     //bien
-    backEnd('setEquipo',nvoEquipo,function(res){
+    backEnd_setEquipo(nvoEquipo).then(function(res){
       if(res){
         nvoEquipo = null;
         backEnd_misDatos().then(function(datos){
@@ -1064,8 +1066,7 @@ rutas.equipo = function(){
           window.location.href = "#menu";
         });
       }
-    });
-    
+    });    
   };
   document.getElementById("nvoNombre").onclick = function(){
     var elemNombre = document.getElementById("nombre");
