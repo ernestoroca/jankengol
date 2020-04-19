@@ -479,7 +479,7 @@ rutas.jugadores = function(){
       });
     }
     backEnd_nvoJugador(cod1+cod2+cod3).then(function(res){
-      if(res){
+      if(res.data){
         backEnd_misDatos().then(function(datos){
           misDatos = datos.data;
           if (!misDatos.jugadores) {
@@ -577,7 +577,7 @@ rutas.unjugador = function(vecUrl){
     document.getElementById("posicion").onchange = function(){
       var posicion = document.getElementById("posicion").value;
       backEnd_setPosicion({codigo:idJugador, posicion:posicion}).then(function(res){
-        if(res){
+        if(res.data){
           cloudStorage.removeItem("/jugadores/"+idJugador);
         }
         window.location.href = "#jugadores";
@@ -1056,7 +1056,7 @@ rutas.equipo = function(){
     
     //bien
     backEnd_setEquipo(nvoEquipo).then(function(res){
-      if(res){
+      if(res.data){
         nvoEquipo = null;
         backEnd_misDatos().then(function(datos){
           misDatos = datos.data;
