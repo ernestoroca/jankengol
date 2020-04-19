@@ -185,6 +185,7 @@ var backEnd_misDatos;
 var backEnd_noJugar;
 var backEnd_nvoNombre;
 var backEnd_nvoJugador;
+var backEnd_setPosicion;
 function iniciar(){
   firebase.initializeApp(firebaseConfig);
   firebase.auth().signInAnonymously();
@@ -210,6 +211,7 @@ function iniciar(){
   backEnd_noJugar = firebase.functions().httpsCallable('noJugar');
   backEnd_nvoNombre = firebase.functions().httpsCallable('nvoNombre');
   backEnd_nvoJugador = firebase.functions().httpsCallable('nvoJugador');
+  backEnd_setPosicion = firebase.functions().httpsCallable('setPosicion');
   window.location.herf="#menu";
   reload();
 }
@@ -572,7 +574,7 @@ rutas.unjugador = function(vecUrl){
     M.FormSelect.init(document.querySelectorAll('select'));
     document.getElementById("posicion").onchange = function(){
       var posicion = document.getElementById("posicion").value;
-      backEnd('setPosicion',{jugador:idJugador, posicion:posicion},function(res){
+      backEnd_setPosicion({codigo:idJugador, posicion:posicion}).then(function(res){
         if(res){
           cloudStorage.removeItem("/jugadores/"+idJugador);
         }
