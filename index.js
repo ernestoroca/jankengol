@@ -116,3 +116,26 @@ exports.nvoJugador = functions.https.onCall((codigo, context) => {
     return false;
   });
 });
+
+exports.setPosicion = functions.https.onCall((codigo, context) => {
+  const userId = context.auth.uid;
+  var database = admin.database();
+  var jugadorRef = database.ref('jugadores/' + codigo);
+  return jugadorRef.once('value').then((snapshot) => {
+    var datos = snapshot.val();
+    if (datos){
+      if (datos.propietario === userId){
+        jugadorRef.update({
+          posicion: param.posicion,
+        });
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }).catch((error) => {
+    return false;
+  }); 
+});
