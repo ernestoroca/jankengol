@@ -184,6 +184,7 @@ function estadoJuego(snap){
 var backEnd_misDatos;
 var backEnd_noJugar;
 var backEnd_nvoNombre;
+var backEnd_nvoJugador;
 function iniciar(){
   firebase.initializeApp(firebaseConfig);
   firebase.auth().signInAnonymously();
@@ -208,6 +209,7 @@ function iniciar(){
   backEnd_misDatos = firebase.functions().httpsCallable('misDatos');
   backEnd_noJugar = firebase.functions().httpsCallable('noJugar');
   backEnd_nvoNombre = firebase.functions().httpsCallable('nvoNombre');
+  backEnd_nvoJugador = firebase.functions().httpsCallable('nvoJugador');
   window.location.herf="#menu";
   reload();
 }
@@ -472,7 +474,7 @@ rutas.jugadores = function(){
         displayLength: 5000,
       });
     }
-    backEnd('nvoJugador',{codigo: cod1+cod2+cod3},function(res){
+    backEnd_nvoJugador(cod1+cod2+cod3).then(function(res){
       if(res){
         backEnd_misDatos().then(function(datos){
           misDatos = datos.data;
@@ -486,7 +488,7 @@ rutas.jugadores = function(){
           html: 'Su código es erroneo',
           displayLength: 5000,
         });
-      }
+      }  
     });
   };
 };
