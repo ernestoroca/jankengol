@@ -1616,6 +1616,30 @@ rutas.ranking = function(){
   var cuerpo = document.getElementsByTagName('body')[0];
   cuerpo.innerHTML = strHtml;
   cuerpo.style.overflow = "visible";
+  function getRanking(back){
+    var refUsr = firebase.database().ref("usuarios");
+    //var query = refUsr.orderByChild("nivel").startAt(3).limit(5);
+    var query = refUsr.orderByChild("nivel").limitToLast(10);
+    query.once("value", function(snapshot) {
+      var lng = snapshot.numChildren();
+      var equipos = [];
+      snapshot.forEach(function(data) {
+        var valor = data.val();
+        equipos.push({
+          nombre: valor.nombre,
+          puntos: valor.nivel,
+          ganados: valor.ganados,
+          empatados: valor.empatados,
+          perdidos: valor.perdidos,
+          favor: valor.favor,
+          contra: valor.contra,
+        });
+        if (equipos.length === lng){
+          back(equipos);
+        }
+      });
+    });
+  }
 
   function getEquipos(){
     var equiposStr = cacheStorage.getItem('ranking');
@@ -1624,7 +1648,7 @@ rutas.ranking = function(){
       equipos = JSON.parse(equiposStr);
       printEquipos(equipos);
     } else {
-      backEnd('ranking',null,function(datos){
+      getRanking(function(datos){
         cacheStorage.setItem("ranking",JSON.stringify(datos),4*60*60*1000);
         printEquipos(datos);
       });
