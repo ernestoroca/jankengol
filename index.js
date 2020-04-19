@@ -54,6 +54,7 @@ exports.noJugar = functions.https.onCall((data, context) => {
     });
     return null;
 });
+
 exports.nvoNombre = functions.https.onCall((nombre, context) => {
   const userId = context.auth.uid;
   var database = admin.database();
@@ -62,18 +63,22 @@ exports.nvoNombre = functions.https.onCall((nombre, context) => {
     var datos = snapshot.val();
     if (datos.nombre !== nombre){
       var ref = database.ref("usuarios");
-      return ref.orderByChild("nombre").equalTo(nombre).once("value", (snapshot) => {
+      return ref.orderByChild("nombre").equalTo(nombre).once("value").then((snapshot) => {
         var otros = snapshot.val();
         if (otros === null){
           usuarioRef.update({
             nombre: nombre,
           });
+          datos.nombre = nombre;
         }
+        return datos;
+      }).catch((error) => {
         return datos;
       });
     } else {
       return datos;
     }
+  }).catch((error) => {
+    return null;
   });
 });
-
