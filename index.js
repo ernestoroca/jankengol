@@ -103,7 +103,8 @@ exports.nvoJugador = functions.https.onCall((codigo, context) => {
           usuarioRef.update({
             jugadores: datos.jugadores,
           });
-        });
+          return true;
+        }).catch(()=>{});
         return true;
       } else {
         return false;
