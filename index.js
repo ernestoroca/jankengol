@@ -54,7 +54,6 @@ exports.noJugar = functions.https.onCall((data, context) => {
     });
     return null;
 });
-
 exports.nvoNombre = functions.https.onCall((nombre, context) => {
   const userId = context.auth.uid;
   var database = admin.database();
@@ -80,5 +79,39 @@ exports.nvoNombre = functions.https.onCall((nombre, context) => {
     }
   }).catch((error) => {
     return null;
+  });
+});
+exports.nvoJugador = functions.https.onCall((codigo, context) => {
+  const userId = context.auth.uid;
+  var database = admin.database();
+  var jugadorRef = database.ref('jugadores/' + codigo);
+  return jugadorRef.once('value').then((snapshot) => {
+    var datos = snapshot.val();
+    if (datos){
+      if (datos.propietario === ""){
+        jugadorRef.update({
+          propietario: userId,
+          nacimiento: Date.now(),
+        });
+        var usuarioRef = database.ref('usuarios/' + userId);
+        usuarioRef.once('value').then((snapshot) => {
+          var datos = snapshot.val();
+          if (!datos.jugadores){
+              datos.jugadores = [];
+          }
+          datos.jugadores.push(codigo);
+          usuarioRef.update({
+            jugadores: datos.jugadores,
+          });
+        });
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }).catch((error)=>{
+    return false;
   });
 });
